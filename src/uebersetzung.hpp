@@ -14,6 +14,8 @@ public:
 
     const std::string& get_name() const { return name; }
 
+    const std::string& get_info() const { return info; }
+
     const std::string& get_text(const std::string& osis_id) const;
 
 private:

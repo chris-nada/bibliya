@@ -10,7 +10,7 @@
 int main() {
     sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Nadabib", sf::Style::None);
     window.setFramerateLimit(60);
-    ImGui::SFML::Init(window);
+    ImGui::SFML::Init(window, false);
     ImPlot::CreateContext();
 
     UI::setup_style();

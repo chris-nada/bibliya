@@ -4,6 +4,9 @@
 #include <unordered_map>
 #include <deque>
 #include <imgui.h>
+#include <unordered_set>
+
+class Buch;
 
 class Mainmenu final {
 
@@ -21,7 +24,7 @@ public:
 
     void show();
 
-private:
+private: // UI
 
     void show_config();
 
@@ -30,5 +33,15 @@ private:
     sf::RenderWindow* window;
 
     bool open = true;
+
+private: // Arbeitsdaten
+
+    std::unordered_set<std::string> keys;
+
+    const Buch* buch;
+
+    unsigned auswahl_kapitel = 1;
+
+    unsigned auswahl_vers = 1;
 
 };

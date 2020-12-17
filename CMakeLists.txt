@@ -4,7 +4,7 @@ project(bibliya)
 set(CMAKE_CXX_STANDARD 17)
 
 # Global
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=amdfam10")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=core2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=lld")
 
 # Integrierte Bibliotheken (im Ordner /libs/)   # Version   | Datum als aktuell | Beschreibung
@@ -23,20 +23,19 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     endif ()
     add_subdirectory(libs)
 else () # Debug build
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
     add_subdirectory(libs)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Og -ggdb") #-Werror
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
 endif ()
 
 # Gemeinsame Bibliotheken
 find_package(SFML 2 REQUIRED graphics window system) # audio
-find_package(PUGIXML REQUIRED)
-include_directories(SYSTEM ${PUGIXML_INCLUDE_DIRS})
 
 #find_package(Boost REQUIRED)
 #include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # Plattformabhängige Bibliotheken
-set(LIBS bibliotheken sfml-system sfml-window sfml-graphics pugixml)
+set(LIBS bibliotheken sfml-system sfml-window sfml-graphics)
 
 ### Debian 10
 if (UNIX)

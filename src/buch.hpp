@@ -9,6 +9,9 @@ class Buch final {
 
 public:
 
+    /// [ID] [Buch]
+    static const std::unordered_map<std::string, Buch>& get_buecher() { return buecher; }
+
     /// Plaintext Name des Buches
     const std::string& get_name() const { return name; }
 
