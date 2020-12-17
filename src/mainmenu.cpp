@@ -49,6 +49,7 @@ void Mainmenu::show_config() {
     ImGui::SetNextWindowSize({window->getSize().x * FAKTOR_PART1, static_cast<float>(window->getSize().y)});
     ImGui::Begin("##win_konfig", nullptr, WINDOW_FLAGS);
     UI::push_font(2);
+    ImGui::SetCursorPosY(window->getSize().y / 10.f);
 
     // Sprachauswahl
     ImGui::NewLine();
@@ -140,6 +141,7 @@ void Mainmenu::show_history() {
     });
     ImGui::Begin("##win_text", &open, WINDOW_FLAGS);
     UI::push_font(3);
+    ImGui::SetCursorPosY(window->getSize().y / 10.f);
 
     if (!keys.empty()) {
         ImGui::Columns(keys.size(), "##texte", true);
