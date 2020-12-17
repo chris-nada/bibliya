@@ -1,11 +1,12 @@
 #include "mainmenu.hpp"
-#include <imgui.h>
+#include "ui.hpp"
 #include <imgui-SFML.h>
 #include <SFML/Window/Event.hpp>
 #include <iostream>
 #include <filesystem>
 
 Mainmenu::Mainmenu() {
+    UI::setup_style();
 }
 
 Mainmenu::Mainmenu(sf::RenderWindow& window) : Mainmenu() {
@@ -34,25 +35,43 @@ void Mainmenu::show() {
         show_history();
 
         // SFML Renders
-
+        //
 
         ImGui::SFML::Render(*window);
         window->display();
+        if (!open) window->close();
     }
 }
 
 void Mainmenu::show_config() {
-    if (static bool open = true; open) {
-        ImGui::SetNextWindowBgAlpha(0x0);
-        ImGui::Begin("win_playground", &open);
+    ImGui::SetNextWindowPos({0,0});
+    ImGui::SetNextWindowSize({window->getSize().x * FAKTOR_PART1, static_cast<float>(window->getSize().y)});
+    ImGui::Begin("##win_konfig", nullptr, WINDOW_FLAGS);
 
-        ImGui::End();
-    }
+    // Sprachauswahl
+
+    // Übersetzungsauswahl
+
+    // Hinzufügen
+
+    ImGui::Separator();
+
+    // Buchauswahl
+
+    // Kapitelauswahl
+
+    ImGui::End();
 }
 
 void Mainmenu::show_history() {
-    ImGui::SetNextWindowBgAlpha(BG_ALPHA);
-    ImGui::Begin("win_log");
+    ImGui::SetNextWindowPos({window->getSize().x * FAKTOR_PART1, 0});
+    ImGui::SetNextWindowSize({
+        static_cast<float>(window->getSize().x) - window->getSize().x * FAKTOR_PART1,
+        static_cast<float>(window->getSize().y)
+    });
+    ImGui::Begin("##win_text", &open, WINDOW_FLAGS);
+
     ImGui::TextColored(ImGui::ColorConvertU32ToFloat4(0xFF00FF00), "%s", "Bla");
+
     ImGui::End();
 }
