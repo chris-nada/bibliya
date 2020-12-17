@@ -29,17 +29,19 @@ endif ()
 
 # Gemeinsame Bibliotheken
 find_package(SFML 2 REQUIRED graphics window system) # audio
+find_package(PUGIXML REQUIRED)
+include_directories(SYSTEM ${PUGIXML_INCLUDE_DIRS})
 
 #find_package(Boost REQUIRED)
 #include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # Plattformabhängige Bibliotheken
-set(LIBS bibliotheken sfml-system sfml-window sfml-graphics)
+set(LIBS bibliotheken sfml-system sfml-window sfml-graphics pugixml)
 
 ### Debian 10
 if (UNIX)
     set(LIBS ${LIBS} OpenGL GL pthread stdc++fs)
-    ### Windows mit MSYS2
+### Windows mit MSYS2
 elseif (WIN32)
     find_package(CEREAL REQUIRED)
     find_package(OpenGL REQUIRED)

@@ -21,4 +21,15 @@ public:
         return teile;
     }
 
+    static std::string get_text_zwischen(std::string zeile, const std::string& s1 = ">", const std::string& s2 = "</") {
+        const auto tag_ende = zeile.find(s1);
+        if (tag_ende != std::string::npos) {
+            zeile = zeile.substr(tag_ende + 1);
+            const auto tag_begin = zeile.find(s2);
+            if (tag_begin != std::string::npos) zeile = zeile.substr(0, tag_begin);
+            return zeile;
+        }
+        return "";
+    }
+
 };

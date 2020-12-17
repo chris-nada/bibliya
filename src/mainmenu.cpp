@@ -1,5 +1,6 @@
 #include "mainmenu.hpp"
 #include "ui.hpp"
+#include "uebersetzung.hpp"
 #include <imgui-SFML.h>
 #include <SFML/Window/Event.hpp>
 #include <iostream>
@@ -49,6 +50,8 @@ void Mainmenu::show_config() {
     ImGui::Begin("##win_konfig", nullptr, WINDOW_FLAGS);
 
     // Sprachauswahl
+    static auto uebersetzungen = Uebersetzung::get_uebersetzungen();
+    ImGui::Text("Uebersetzungen gefunden: %d", static_cast<unsigned>(uebersetzungen.size()));
 
     // Übersetzungsauswahl
 

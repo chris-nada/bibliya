@@ -5,7 +5,7 @@
 #include <imgui-SFML.h>
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Nada Brothel", sf::Style::None);
+    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Nadabib", sf::Style::None);
     window.setFramerateLimit(60);
     ImGui::SFML::Init(window);
     ImPlot::CreateContext();

@@ -5,6 +5,8 @@
 
 class Buch final {
 
+    friend class Uebersetzung;
+
 public:
 
     /// Plaintext Name des Buches
@@ -24,7 +26,7 @@ public:
 
     /// Anzahl der Verse in diesem Buch
     unsigned get_n_verse(unsigned kapitel) const {
-        try { return n_verse.at(n_kapitel); }
+        try { return n_verse.at(kapitel); }
         catch (const std::exception& e) { return 0; }
     }
 
