@@ -7,7 +7,7 @@
 #include <filesystem>
 
 Mainmenu::Mainmenu() {
-    UI::setup_style();
+
 }
 
 Mainmenu::Mainmenu(sf::RenderWindow& window) : Mainmenu() {

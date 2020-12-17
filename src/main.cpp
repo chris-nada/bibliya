@@ -1,4 +1,7 @@
 #include "mainmenu.hpp"
+#include "laden.hpp"
+#include "uebersetzung.hpp"
+#include "ui.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <imgui.h>
 #include <implot.h>
@@ -9,6 +12,12 @@ int main() {
     window.setFramerateLimit(60);
     ImGui::SFML::Init(window);
     ImPlot::CreateContext();
+
+    UI::setup_style();
+
+    std::function<void(std::function<void(void)>&)> init = Uebersetzung::init;
+    Laden laden(window);
+    laden.show(init);
 
     Mainmenu menu(window);
     menu.show();

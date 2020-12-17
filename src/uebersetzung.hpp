@@ -2,14 +2,15 @@
 
 #include "buch.hpp"
 #include <vector>
+#include <functional>
 
 class Uebersetzung final {
 
 public:
 
-    static const std::unordered_map<std::string, std::unordered_map<std::string, Uebersetzung>>& get_uebersetzungen();
+    static void init(std::function<void(void)>& display_progress);
 
-    static const std::unordered_map<std::string, Buch>& get_buecher();
+    static const std::unordered_map<std::string, std::unordered_map<std::string, Uebersetzung>>& get_uebersetzungen();
 
     const std::string& get_name() const { return name; }
 
@@ -19,9 +20,6 @@ private:
 
     /// Key: Sprache [de], Value: Uebersetzungen
     static std::unordered_map<std::string, std::unordered_map<std::string, Uebersetzung>> uebersetzungen;
-
-    /// Key: Kapitel [key], Value: Kapitel
-    static inline std::unordered_map<std::string, Buch> buecher;
 
     /// Name der Übersetzung
     std::string name;
