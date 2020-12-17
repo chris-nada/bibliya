@@ -21,34 +21,38 @@ const std::unordered_map<std::string, std::unordered_map<std::string, Uebersetzu
             if (sprachordner.is_directory()) {
                 const std::string& sprache = sprachordner.path().filename().string();
                 for (const auto& datei : std::filesystem::directory_iterator(sprachordner)) {
-                    if (datei.is_regular_file() && datei.path().extension().string().find("xml") != std::string::npos) {
+                    if (datei.is_regular_file() && datei.path().string().find(".xml") != std::string::npos) {
                         if (std::ifstream in(datei.path()); in.good()) {
 
                             /// Text importieren - OSIS-ID, Text
                             std::cout << "Uebersetzung wird importiert, Sprache: " << sprache << ' ' << datei.path().string() << std::endl;
 
                             Uebersetzung u;
-                            std::string key;
-
-                            std::string osis_id;
-                            std::string txt;
+                            std::string key = datei.path().filename().string();
 
                             for (std::string s; std::getline(in, s);) {
 
                                 // Vers Start
                                 if (s.find("verse") != std::string::npos && s.find("osisID") != std::string::npos) {
-                                    osis_id = Sonstiges::get_text_zwischen(s, "\"", "\"");
-                                    txt.append(s.substr('>'));
+                                    std::string osis_id = Sonstiges::get_text_zwischen(s, "\"", "\"");
+                                    std::string txt = Sonstiges::get_text_zwischen(s, ">", "<");
 
-                                    std::cout << "\tOSIS-ID: " << osis_id << '\n';
-                                    std::cout << "\t\ttxt: " << txt << '\n';
+                                    //std::cout << "\tOSIS-ID: " << osis_id << '\n';
+                                    //std::cout << "\t\ttxt: " << txt << std::endl;
+
+                                    // Fehlerbehandlung
+                                    if (osis_id.empty()) {
+                                        std::cerr << "Warnung: osis_id leer: " << s << std::endl;
+                                        continue;
+                                    }
+                                    if (txt.empty()) std::cerr << "Warnung: txt leer: " << s << std::endl;
+
+                                    // Speichern
                                     u.texte[osis_id].append(txt);
-
-                                    txt.clear();
-                                    break;
-                                } else if (s.find("ntitel") != std::string::npos) {
+                                    //break;
+                                } else if (u.name.empty() && s.find("title") != std::string::npos) {
                                     u.name = Sonstiges::get_text_zwischen(s);
-                                } else if (s.find("ninfo") != std::string::npos) {
+                                } else if (u.info.empty() && s.find("description") != std::string::npos) {
                                     u.info = Sonstiges::get_text_zwischen(s);
                                 }
                             }
