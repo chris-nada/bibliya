@@ -26,7 +26,7 @@ public:
         if (tag_ende != std::string::npos) {
             zeile = zeile.substr(tag_ende + 1);
             const auto tag_begin = zeile.find(s2);
-            if (tag_begin != std::string::npos) zeile = zeile.substr(0, tag_begin);
+            if (tag_begin != std::string::npos) zeile.resize(tag_begin);
             return zeile;
         }
         return "";

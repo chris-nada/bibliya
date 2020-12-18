@@ -67,8 +67,9 @@ void Uebersetzung::init(std::function<void(void)>& display_progress) {
                                             Buch& b = Buch::buecher[tokens[0]];
                                             const unsigned kapitel = std::stoul(tokens[1]);
                                             const unsigned vers    = std::stoul(tokens[2]);
-                                            b.name = tokens[0]; // TODO besserer Name
-                                            b.n_kapitel        = std::max(kapitel, b.n_kapitel);
+                                            b.pos  = std::get<0>(Buch::get_order(tokens[0]));
+                                            b.name = std::get<1>(Buch::get_order(tokens[0]));
+                                            b.n_kapitel = std::max(kapitel, b.n_kapitel);
                                             b.n_verse[kapitel] = std::max(vers,    b.n_verse[kapitel]);
                                             if (b.osis_ids[kapitel][vers].empty()) b.osis_ids[kapitel][vers] = osis_id;
                                             else if (b.osis_ids[kapitel][vers] != osis_id) {

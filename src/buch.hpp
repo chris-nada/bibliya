@@ -15,6 +15,9 @@ public:
     /// Plaintext Name des Buches
     const std::string& get_name() const { return name; }
 
+    /// Getter: Position.
+    unsigned get_pos() const { return pos; };
+
     /// OSIS-ID für gg. Kapitel + Vers
     const std::string& get_osis_id(unsigned kapitel, unsigned vers) const;
 
@@ -26,11 +29,17 @@ public:
 
 private:
 
+    /// <Position,Name>, (id)
+    static const std::tuple<unsigned, std::string>& get_order(const std::string& id);
+
     /// Key: Kapitel [key], Value: Kapitel
     static std::unordered_map<std::string, Buch> buecher;
 
     /// Name Plaintext
     std::string name;
+
+    /// Position
+    unsigned pos;
 
     /// [Kapitel][Vers] -> OSIS-ID
     std::unordered_map<unsigned, std::unordered_map<unsigned, std::string>> osis_ids;
