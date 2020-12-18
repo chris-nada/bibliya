@@ -2,6 +2,8 @@
 
 **Bibliya ist freie Software zum Anzeigen von Bibeltexten.**
 
+![image](https://gitlab.com/chris_nada/bibliya/-/wikis/uploads/52da7be794452ef68f5916b73f472660/image.png)
+
 + Es können mehrere Bibelübersetzungen zur Textanalyse nebeneinander verglichen werden.
 + Die Übersetzungen werden aus OSIS-Dateien eingelesen, **einige freie Übersetzungen sind bereits enthalten**. 
 + Weitere Übersetzungen sind hier: https://github.com/gratis-bible/bible oder hier: https://ebible.org/find/ frei erhältlich.
