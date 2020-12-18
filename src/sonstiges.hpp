@@ -32,4 +32,8 @@ public:
         return "";
     }
 
+    static void replace(std::string& s, const std::string& alt, const std::string& neu) {
+        while (s.find(alt) != std::string::npos) s.replace(s.find(alt), alt.size(), neu);
+    }
+
 };

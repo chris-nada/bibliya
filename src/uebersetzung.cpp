@@ -61,13 +61,40 @@ void Uebersetzung::init(std::function<void(void)>& display_progress) {
                                         std::cerr << "[Warnung] osis_id leer: " << datei << ' ' << s << '\n';
                                         continue;
                                     }
-                                    if (txt.empty()) std::cerr << "[Warnung] txt leer: " << s << '\n';
-                                    /*
-                                     * TODO in solchen Fällen:
-                                     * <verse osisID='2Chr.1.13'>
-                                     *     <note>Anmerkung...</note>Text.</verse>
-                                     * <verse osisID='2Chr.1.14'>Text...</verse>
-                                     */
+
+                                    // Weitere Zeile auslesen
+                                    if (txt.empty())  {
+                                        /*
+                                         * In solchen Fällen:
+                                         *
+                                         * <verse osisID='2Chr.1.13'>
+                                         *     <note>Anmerkung...</note>Text.</verse>
+                                         *
+                                         * oder
+                                         *
+                                         * <verse osisID="Ps.118.9" sID="Ps.118.9.seID.16674" n="9" />
+                                         * <hi type="italic">Beth</hi> In quo corrigit adolescentior viam suam? in custodiendo sermones tuos.
+                                         */
+                                        std::string s2;
+                                        std::getline(in, s2);
+                                        Sonstiges::replace(s2, "<note>",   "[");
+                                        Sonstiges::replace(s2, "</note>",  "]");
+                                        for (unsigned limit = 0; limit < 5 &&
+                                                s2.find('<') != std::string::npos &&
+                                                s2.find('>') != std::string::npos; ++limit)
+                                        {
+                                            s2.erase(s2.find('<'), s2.find('>'));
+                                        }
+                                        // Leading Whitespace entfernen
+                                        const auto first_char = s2.find_first_not_of(" \t");
+                                        if (first_char > 0 && first_char != std::string::npos) s2 = s2.substr(first_char);
+                                        txt.append(s2);
+                                        if (txt.empty()) std::cerr << "[Warnung] txt leer: s=" << s << ", s2=" << s2 << '\n';
+                                    }
+
+                                    // Anmerkungen
+                                    Sonstiges::replace(s, "<note>",   "[");
+                                    Sonstiges::replace(s, "</note>",  "]");
 
                                     // Speichern
                                     u.texte[osis_id].append(txt);
@@ -94,19 +121,17 @@ void Uebersetzung::init(std::function<void(void)>& display_progress) {
                                     }
                                     else std::cerr << "[Warnung] osis_id tokens != 3 in " << datei << ' ' << osis_id << '\n';
                                 }
-                                    // Titel
+                                // Titel
                                 else if (u.name.empty() && s.find("title") != std::string::npos) {
                                     u.name = Sonstiges::get_text_zwischen(s);
                                 }
-                                    // Beschreibung
+                                // Beschreibung
                                 else if (u.info.empty() && s.find("description") != std::string::npos) {
                                     u.info = Sonstiges::get_text_zwischen(s);
                                 }
                             }
                             // Speichern
-                            std::cout << "\tnKey: " << key << '\n';
-                            std::cout << "\tnTitel: " << u.name << '\n';
-                            std::cout << "\tnInfo: "  << u.info << '\n';
+                            std::cout << "\tImport von " << key << " abgeschlossen\n";
                             uebersetzungen[sprache][key] = u;
                         } else std::cerr << "[Warnung] Uebersetzung konnte nicht geoeffnet werden: " << datei.path().string() << '\n';
                     }
