@@ -5,6 +5,8 @@
 #include <imgui-SFML.h>
 #include <cmath>
 #include "laden.hpp"
+#include "ui.hpp"
+#include "zufall.hpp"
 
 Laden::Laden(sf::RenderWindow& window) {
     Laden::window = &window;
@@ -16,9 +18,10 @@ void Laden::show(std::function<void(std::function<void(void)>&)>& prozess) {
         static sf::CircleShape form(r, 6);
         static sf::Font font;
         static sf::Text text;
+        static sf::Clock timer;
         for (static bool init = true; init; init = false) {
             form.setPosition(window->getSize().x/2 - r/2, window->getSize().y/2 - r/2);
-            form.setFillColor({0xA0, 0x80, 0x80});
+            form.setFillColor(UI::FARBE1);
             form.setOrigin(100.f, 100.f);
             font.loadFromFile("data/RursusCompactMono.ttf");
             text.setFont(font);
@@ -27,7 +30,15 @@ void Laden::show(std::function<void(std::function<void(void)>&)>& prozess) {
         }
         window->clear();
 
+        // Animieren
+        if (timer.getElapsedTime().asSeconds() > 1) {
+            std::size_t points = form.getPointCount();
+            while (points == form.getPointCount()) points = Zufall::get(3,6);
+            form.setPointCount(points);
+            timer.restart();
+        }
         form.rotate(1);
+
         window->draw(form);
         window->draw(text);
 

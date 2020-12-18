@@ -104,12 +104,32 @@ void Mainmenu::show_config() {
     static const auto& buecher_paare = Buch::get_buecher();
     if (buecher.empty()) {
         for (const auto& temp_buch : buecher_paare) buecher.push_back(temp_buch.first);
-        std::sort(buecher.begin(), buecher.end()); // TODO
+        std::sort(buecher.begin(), buecher.end(), [](const std::string& lhs, const std::string& rhs) {
+            return buecher_paare.at(lhs).get_pos() < buecher_paare.at(rhs).get_pos();
+        });
     }
     if (ImGui::BeginCombo("##BuchCombo", buecher_paare.at(buecher[auswahl_buch]).get_name().c_str())) {
+        static const ImColor FARBE = {UI::FARBE1};
+        static const auto einschub = [](const char* text) {
+            ImGui::Separator();
+            ImGui::TextColored(FARBE, "%s", text);
+            ImGui::Separator();
+        };
+        bool unbekannt = false;
+        einschub( "- Altes Testament -");
         for (unsigned i = 0; i < buecher.size(); ++i) {
             const bool is_selected = (auswahl_buch == i);
-            if (ImGui::Selectable(buecher_paare.at(buecher[i]).get_name().c_str(), is_selected)) auswahl_buch = i;
+            const Buch& temp_buch = buecher_paare.at(buecher[i]);
+
+            // Einschübe
+            if (temp_buch.get_name() == buecher[i] && !unbekannt) {
+                einschub("- Unzugeordnet -");
+                unbekannt = true;
+            }
+            else if (buecher[i] == "Matt") einschub("- Neues Testament -");
+
+            // Auswahl
+            if (ImGui::Selectable(temp_buch.get_name().c_str(), is_selected)) auswahl_buch = i;
             if (is_selected) ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();
