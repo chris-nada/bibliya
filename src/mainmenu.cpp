@@ -1,10 +1,14 @@
 #include "mainmenu.hpp"
 #include "ui.hpp"
 #include "uebersetzung.hpp"
+
 #include <imgui-SFML.h>
 #include <SFML/Window/Event.hpp>
-#include <iostream>
+#include <cereal/archives/portable_binary.hpp>
+#include <cereal/types/unordered_set.hpp>
+#include <cereal/types/string.hpp>
 #include <filesystem>
+#include <fstream>
 
 #ifdef __WIN32__
     #include <windows.h>
@@ -12,7 +16,15 @@
 #endif
 
 Mainmenu::Mainmenu() {
-
+    if (std::ifstream in("data/save.dat", std::ios::binary); in.good()) {
+        cereal::PortableBinaryInputArchive boa(in);
+        unsigned buch_pos;
+        boa(keys, buch_pos, auswahl_kapitel, auswahl_vers, auswahl_modus);
+        for (const auto& buch_paar : Buch::get_buecher()) if (buch_paar.second.get_pos() == buch_pos) {
+            buch = &buch_paar.second;
+            break;
+        }
+    }
 }
 
 Mainmenu::Mainmenu(sf::RenderWindow& window) : Mainmenu() {
@@ -20,7 +32,10 @@ Mainmenu::Mainmenu(sf::RenderWindow& window) : Mainmenu() {
 }
 
 Mainmenu::~Mainmenu() {
-
+    if (std::ofstream out("data/save.dat", std::ios::binary); out.good()) {
+        cereal::PortableBinaryOutputArchive boa(out);
+        boa(keys, buch->get_pos(), auswahl_kapitel, auswahl_vers, auswahl_modus);
+    }
 }
 
 void Mainmenu::show() {
