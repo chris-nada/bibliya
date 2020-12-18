@@ -31,7 +31,7 @@ void Laden::show(std::function<void(std::function<void(void)>&)>& prozess) {
         window->clear();
 
         // Animieren
-        if (timer.getElapsedTime().asSeconds() > 1) {
+        if (timer.getElapsedTime().asSeconds() > 3) {
             std::size_t points = form.getPointCount();
             while (points == form.getPointCount()) points = Zufall::get(3,6);
             form.setPointCount(points);

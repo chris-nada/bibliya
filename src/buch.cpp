@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <mutex>
 #include "buch.hpp"
 #include "sonstiges.hpp"
 
@@ -21,19 +22,29 @@ unsigned Buch::get_n_verse(unsigned kapitel) const {
 const std::tuple<unsigned, std::string>& Buch::get_order(const std::string& id) {
     typedef std::tuple<unsigned, std::string> tuple;
     static std::unordered_map<std::string, tuple> metadaten;
+    static std::mutex mutex;
     static unsigned pos = 1;
     if (metadaten.empty()) {
-        if (std::ifstream in("data/buecher.ini"); in.good()) {
-            for (std::string s; std::getline(in, s);) {
-                if (s.size() >= 3 && s.find('=') != std::string::npos) {
-                    const auto& tokens = Sonstiges::tokenize(s, '=');
-                    if (tokens.size() != 2 || tokens[0].empty() || tokens[1].empty()) continue;
-                    metadaten[tokens[1]] = std::make_tuple(pos, tokens[0]);
-                    pos++;
+        std::lock_guard lock(mutex);
+        if (metadaten.empty()) {
+            if (std::ifstream in("data/buecher.ini"); in.good()) {
+                for (std::string s; std::getline(in, s);) {
+                    if (s.size() >= 3 && s.find('=') != std::string::npos) {
+                        const auto& tokens = Sonstiges::tokenize(s, '=');
+                        if (tokens.size() != 2 || tokens[0].empty() || tokens[1].empty()) continue;
+                        metadaten[tokens[1]] = std::make_tuple(pos, tokens[0]);
+                        pos++;
+                    }
                 }
             }
         }
     }
-    if (metadaten.count(id) == 0) { metadaten[id] = std::make_tuple(pos, id); ++pos; }
+    if (metadaten.count(id) == 0) {
+        std::lock_guard lock(mutex);
+        if (metadaten.count(id) == 0) {
+            metadaten[id] = std::make_tuple(pos, id);
+            ++pos;
+        }
+    }
     return metadaten.at(id);
 }
