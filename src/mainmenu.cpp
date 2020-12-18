@@ -87,7 +87,7 @@ void Mainmenu::show_config() {
             //if (is_selected) ImGui::SetItemDefaultFocus();
             if (!info.empty() && ImGui::IsItemHovered()) {
                 ImGui::BeginTooltip();
-                ImGui::Dummy({400.f, 0});
+                ImGui::Dummy({600.f, 0});
                 ImGui::TextWrapped("%s", info.c_str());
                 ImGui::EndTooltip();
             }
@@ -135,17 +135,21 @@ void Mainmenu::show_history() {
                     ImGui::TextUnformatted(u.get_name().c_str());
                     ImGui::NewLine();
 
-                    // Text
+                    // Textdarstellung
                     auto verstext = [&](unsigned kapitel, unsigned vers) {
                         const std::string& text = u.get_text(buch->get_osis_id(kapitel, vers));
                         ImGui::TextColored(UI::FARBE1, "%u", vers);
                         ImGui::TextWrapped("%s", text.c_str());
                     };
-                    verstext(auswahl_kapitel, auswahl_vers);
-                    if (buch->get_n_verse(auswahl_kapitel) > auswahl_vers) {
-                        verstext(auswahl_kapitel, auswahl_vers + 1);
-                    }
 
+                    // Verse auflisten
+                    unsigned vers_start = auswahl_vers;
+                    unsigned vers_ende  = auswahl_vers;
+                    if      (auswahl_modus == 1) vers_ende = auswahl_vers + 4;
+                    else if (auswahl_modus == 2) vers_ende = buch->get_n_verse(auswahl_kapitel);
+                    for (unsigned v = vers_start; v <= vers_ende && v <= buch->get_n_verse(auswahl_kapitel); ++v) {
+                        verstext(auswahl_kapitel, v);
+                    }
                     ImGui::NextColumn();
                 }
             }
@@ -212,5 +216,13 @@ void Mainmenu::versauswahl() {
     ImGui::TextUnformatted("Vers");
     ImGui::InputScalar("##input_Vers", ImGuiDataType_U32, &auswahl_vers, &STEP, nullptr, "%u");
     auswahl_vers = std::clamp(auswahl_vers, 1u, buch->get_n_verse(auswahl_kapitel));
+
+    // Modus
+    ImGui::NewLine();
+    ImGui::TextUnformatted("Darstellung");
+    ImGui::RadioButton("1 Vers",  &auswahl_modus, 0);
+    ImGui::RadioButton("5 Verse", &auswahl_modus, 1);
+    ImGui::RadioButton("Kapitel", &auswahl_modus, 2);
+
     ImGui::PopFont();
 }

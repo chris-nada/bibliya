@@ -46,4 +46,7 @@ private: // Arbeitsdaten
 
     unsigned auswahl_vers = 1;
 
+    /// 0 = Einzeln, 1 = Fünf Verse, 2 = Kapitel
+    int auswahl_modus = 0;
+
 };
