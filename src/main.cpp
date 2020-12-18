@@ -12,7 +12,6 @@ int main() {
     window.setFramerateLimit(60);
     ImGui::SFML::Init(window, false);
     ImPlot::CreateContext();
-
     UI::setup_style();
 
     std::function<void(std::function<void(void)>&)> init = Uebersetzung::init;

@@ -6,6 +6,11 @@
 #include <iostream>
 #include <filesystem>
 
+#ifdef __WIN32__
+    #include <windows.h>
+    #include <winuser.h>
+#endif
+
 Mainmenu::Mainmenu() {
 
 }
@@ -47,7 +52,7 @@ void Mainmenu::show() {
 void Mainmenu::show_config() {
     ImGui::SetNextWindowPos({0,0});
     ImGui::SetNextWindowSize({window->getSize().x * FAKTOR_PART1, static_cast<float>(window->getSize().y)});
-    ImGui::Begin("##win_konfig", nullptr, WINDOW_FLAGS);
+    ImGui::Begin("##win_konfig", nullptr, ImGuiWindowFlags_NoTitleBar);
     UI::push_font(2);
     ImGui::SetCursorPosY(window->getSize().y / 10.f);
 
@@ -109,12 +114,26 @@ void Mainmenu::show_config() {
 }
 
 void Mainmenu::show_history() {
+    const float size_x = window->getSize().x - window->getSize().x * FAKTOR_PART1;
     ImGui::SetNextWindowPos({window->getSize().x * FAKTOR_PART1, 0});
-    ImGui::SetNextWindowSize({
-        static_cast<float>(window->getSize().x) - window->getSize().x * FAKTOR_PART1,
-        static_cast<float>(window->getSize().y)
-    });
+    ImGui::SetNextWindowSize({size_x, static_cast<float>(window->getSize().y)});
+    static const auto WINDOW_FLAGS = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar;
     ImGui::Begin("##win_text", &open, WINDOW_FLAGS);
+
+    // Minimieren
+    if (ImGui::BeginMenuBar()) {
+        ImGui::SetCursorPosX(size_x - 40);
+        if (ImGui::Button("_##minimieren")) {
+            #ifdef __WIN32__
+            sf::WindowHandle handle = window->getSystemHandle();
+            ShowWindow(handle, SW_MINIMIZE);
+            #endif
+        }
+        if (ImGui::Button("X##schliessen")) {
+            window->close();
+        }
+        ImGui::EndMenuBar();
+    }
 
     // Text(e)
     UI::push_font(3);

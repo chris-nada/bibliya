@@ -12,8 +12,6 @@ class Mainmenu final {
 
     static constexpr float FAKTOR_PART1 = 0.15f;
 
-    static constexpr auto WINDOW_FLAGS = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
-
 public:
 
     Mainmenu();
