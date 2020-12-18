@@ -35,7 +35,8 @@ void Uebersetzung::init(std::function<void(void)>& display_progress) {
                             std::cout << "Uebersetzung wird importiert, Sprache: " << sprache << ' ' << datei.path().string() << std::endl;
 
                             Uebersetzung u;
-                            std::string key = datei.path().filename().string();
+                            std::string trennchar;
+                            const std::string key = datei.path().filename().string();
 
                             for (std::string s; std::getline(in, s);) {
 
@@ -44,7 +45,12 @@ void Uebersetzung::init(std::function<void(void)>& display_progress) {
 
                                 // Vers Start
                                 if (s.find("verse") != std::string::npos && s.find("osisID") != std::string::npos) {
-                                    std::string osis_id = Sonstiges::get_text_zwischen(s, "\"", "\"");
+                                    if (trennchar.empty()) {
+                                        const auto pos1 = s.find('\'');
+                                        const auto pos2 = s.find('\"');
+                                        trennchar = pos1 < pos2 ? "'" : "\"";
+                                    }
+                                    std::string osis_id = Sonstiges::get_text_zwischen(s, trennchar, trennchar);
                                     std::string txt = Sonstiges::get_text_zwischen(s, ">", "<");
 
                                     //std::cout << "\tOSIS-ID: " << osis_id << '\n';
@@ -52,10 +58,16 @@ void Uebersetzung::init(std::function<void(void)>& display_progress) {
 
                                     // Fehlerbehandlung
                                     if (osis_id.empty()) {
-                                        std::cerr << "[Warnung] osis_id leer: " << s << '\n';
+                                        std::cerr << "[Warnung] osis_id leer: " << datei << ' ' << s << '\n';
                                         continue;
                                     }
                                     if (txt.empty()) std::cerr << "[Warnung] txt leer: " << s << '\n';
+                                    /*
+                                     * TODO in solchen Fällen:
+                                     * <verse osisID='2Chr.1.13'>
+                                     *     <note>Anmerkung...</note>Text.</verse>
+                                     * <verse osisID='2Chr.1.14'>Text...</verse>
+                                     */
 
                                     // Speichern
                                     u.texte[osis_id].append(txt);
@@ -80,7 +92,7 @@ void Uebersetzung::init(std::function<void(void)>& display_progress) {
                                             std::cerr << "[Warnung] osis_id Parse Fehler: " << osis_id << '\n';
                                         }
                                     }
-                                    else std::cerr << "[Warnung] osis_id tokens != 3 im Falle von " << osis_id << '\n';
+                                    else std::cerr << "[Warnung] osis_id tokens != 3 in " << datei << ' ' << osis_id << '\n';
                                 }
                                     // Titel
                                 else if (u.name.empty() && s.find("title") != std::string::npos) {

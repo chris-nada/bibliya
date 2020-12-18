@@ -30,6 +30,8 @@ private: // UI
 
     void show_history();
 
+    void versauswahl();
+
     sf::RenderWindow* window;
 
     bool open = true;

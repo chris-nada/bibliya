@@ -83,18 +83,82 @@ void Mainmenu::show_config() {
             auto temp_it = uebersetzungen->cbegin();
             std::advance(temp_it, i);
             if (ImGui::Selectable(temp_it->second.get_name().c_str(), is_selected)) auswahl_uebersetzung = i;
-            if (is_selected) ImGui::SetItemDefaultFocus();
+            const std::string& info = temp_it->second.get_info();
+            //if (is_selected) ImGui::SetItemDefaultFocus();
+            if (!info.empty() && ImGui::IsItemHovered()) {
+                ImGui::BeginTooltip();
+                ImGui::Dummy({400.f, 0});
+                ImGui::TextWrapped("%s", info.c_str());
+                ImGui::EndTooltip();
+            }
         }
         ImGui::EndCombo();
     }
-    ImGui::TextWrapped("%s", uebersetzung_it->second.get_info().c_str());
-
     // Hinzufügen
-    ImGui::SetCursorPosY(window->getSize().y/2.f);
+    ImGui::NewLine();
     if (ImGui::Button("Hinzufügen")) keys.insert(uebersetzung_it->first);
 
-    ImGui::NewLine();
+    ImGui::PopFont();
+
+    // Versauswahl
+    ImGui::SetCursorPosY(window->getSize().y/2.f);
     ImGui::Separator();
+    versauswahl();
+
+    ImGui::End();
+}
+
+void Mainmenu::show_history() {
+    ImGui::SetNextWindowPos({window->getSize().x * FAKTOR_PART1, 0});
+    ImGui::SetNextWindowSize({
+        static_cast<float>(window->getSize().x) - window->getSize().x * FAKTOR_PART1,
+        static_cast<float>(window->getSize().y)
+    });
+    ImGui::Begin("##win_text", &open, WINDOW_FLAGS);
+
+    // Text(e)
+    UI::push_font(3);
+    ImGui::SetCursorPosY(window->getSize().y / 10.f);
+    if (!keys.empty()) {
+        ImGui::Columns(keys.size(), "##texte", true);
+        for (const std::string& key : keys) {
+            // In allen Sprachen suchen // TODO suboptimal
+            for (const auto& paar : Uebersetzung::get_uebersetzungen()) {
+                if (paar.second.count(key) != 0) {
+                    // Entfernen (X)
+                    if (std::string btn_label = "(X)##del" + key; ImGui::Button(btn_label.c_str())) {
+                        keys.erase(key);
+                        goto ausgang;
+                    }
+                    // Überschrift = Name d. Übersetzung
+                    const Uebersetzung& u = paar.second.at(key);
+                    ImGui::TextUnformatted(u.get_name().c_str());
+                    ImGui::NewLine();
+
+                    // Text
+                    auto verstext = [&](unsigned kapitel, unsigned vers) {
+                        const std::string& text = u.get_text(buch->get_osis_id(kapitel, vers));
+                        ImGui::TextColored(UI::FARBE1, "%u", vers);
+                        ImGui::TextWrapped("%s", text.c_str());
+                    };
+                    verstext(auswahl_kapitel, auswahl_vers);
+                    if (buch->get_n_verse(auswahl_kapitel) > auswahl_vers) {
+                        verstext(auswahl_kapitel, auswahl_vers + 1);
+                    }
+
+                    ImGui::NextColumn();
+                }
+            }
+        }
+        ausgang:
+        ImGui::Columns();
+    }
+    ImGui::PopFont();
+    ImGui::End();
+}
+
+void Mainmenu::versauswahl() {
+    UI::push_font(2);
 
     // Buchauswahl
     ImGui::NewLine();
@@ -148,43 +212,5 @@ void Mainmenu::show_config() {
     ImGui::TextUnformatted("Vers");
     ImGui::InputScalar("##input_Vers", ImGuiDataType_U32, &auswahl_vers, &STEP, nullptr, "%u");
     auswahl_vers = std::clamp(auswahl_vers, 1u, buch->get_n_verse(auswahl_kapitel));
-
     ImGui::PopFont();
-    ImGui::End();
-}
-
-void Mainmenu::show_history() {
-    ImGui::SetNextWindowPos({window->getSize().x * FAKTOR_PART1, 0});
-    ImGui::SetNextWindowSize({
-        static_cast<float>(window->getSize().x) - window->getSize().x * FAKTOR_PART1,
-        static_cast<float>(window->getSize().y)
-    });
-    ImGui::Begin("##win_text", &open, WINDOW_FLAGS);
-    UI::push_font(3);
-    ImGui::SetCursorPosY(window->getSize().y / 10.f);
-
-    if (!keys.empty()) {
-        ImGui::Columns(keys.size(), "##texte", true);
-        for (const std::string& key : keys) {
-            // In allen Sprachen suchen // TODO suboptimal
-            for (const auto& paar : Uebersetzung::get_uebersetzungen()) {
-                if (paar.second.count(key) != 0) {
-                    const Uebersetzung& u = paar.second.at(key);
-                    ImGui::TextUnformatted(u.get_name().c_str());
-                    std::string btn_label = "(X)##del" + key;
-                    if (ImGui::SameLine(); ImGui::Button(btn_label.c_str())) {
-                        keys.erase(key);
-                        goto ausgang;
-                    }
-                    const std::string& text = u.get_text(buch->get_osis_id(auswahl_kapitel, auswahl_vers));
-                    ImGui::TextWrapped("%s", text.c_str());
-                    ImGui::NextColumn();
-                }
-            }
-        }
-        ausgang:
-        ImGui::Columns();
-    }
-    ImGui::PopFont();
-    ImGui::End();
 }
