@@ -21,3 +21,6 @@
 + RAM-Nutzung ist bei 10 importieren Übersetzungen bei etwa 200-300 MB.
 + Windows-Version: 64-Bit-Edition von Windows XP, 7, 8, 8.1 oder 10.
 + Linux-Version: Eine 64-Bit-Version, die auf Debian basiert (z.B. Ubuntu, MXLinux etc.).
+
+# Lizenz
++ [BSD 3-Klauseln](LICENSE)
