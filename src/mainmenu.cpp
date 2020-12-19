@@ -103,7 +103,7 @@ void Mainmenu::show_texte() {
 
     // Menübalken
     UI::push_font(6);
-    bool begin_menu_bar = ImGui::BeginMenuBar();
+    const bool begin_menu_bar = ImGui::BeginMenuBar();
     ImGui::PopFont();
     if (begin_menu_bar) {
         UI::push_icons();
@@ -252,7 +252,10 @@ void Mainmenu::ui_verswahl() {
             return buecher_paare.at(lhs).get_pos() < buecher_paare.at(rhs).get_pos();
         });
     }
-    if (ImGui::BeginCombo("##BuchCombo", buch->get_name().c_str())) {
+
+    // Buch ComboBox Begin
+    const bool begin_buch_combo = ImGui::BeginCombo("##BuchCombo", buch->get_name().c_str());
+    if (begin_buch_combo) {
         static const ImColor FARBE = {UI::FARBE1};
         static const auto einschub = [](const char* text) {
             ImGui::Separator();
@@ -260,6 +263,8 @@ void Mainmenu::ui_verswahl() {
             ImGui::Separator();
         };
         bool start_unbekannte = false;
+
+        // Bücher auflisten
         einschub( "- Altes Testament -");
         for (const auto& buch_key : buecher) {
             const Buch& temp_buch = buecher_paare.at(buch_key);
@@ -277,6 +282,15 @@ void Mainmenu::ui_verswahl() {
             if (is_selected) ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();
+    }
+
+    // Buch -/+
+    const unsigned buch_pos_alt = buch->get_pos();
+    unsigned buch_pos_neu = buch_pos_alt;
+    ImGui::SameLine(); if (ImGui::Button("-##buch_minus")) --buch_pos_neu;
+    ImGui::SameLine(); if (ImGui::Button("+##buch_plus")) ++buch_pos_neu;
+    if (buch_pos_neu != buch_pos_alt && buch_pos_neu >= 1 && buch_pos_neu <= buecher.size()) {
+        buch = &Buch::get_buch(buch_pos_neu);
     }
 
     // Kapitelauswahl
