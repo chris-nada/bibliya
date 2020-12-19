@@ -114,7 +114,10 @@ void Mainmenu::show_texte() {
         ImGui::PopFont();
 
         UI::push_icons();
-        if (ImGui::Button("\uF002##Suche")) open_suche = true;
+        if (ImGui::Button("\uF002##Suche")) {
+            ImGui::SetWindowFocus(id_suche);
+            open_suche = true;
+        }
         ImGui::PopFont();
         UI::push_font();
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Suche");
@@ -355,10 +358,11 @@ void Mainmenu::show_lesezeichen() {
 }
 
 void Mainmenu::show_suche() {
-    static const char* win_id = "Suche##win_suche";
     if (open_suche) {
         UI::push_font();
-        if (ImGui::Begin(win_id, &open_suche)) {
+        if (ImGui::Begin(id_suche, &open_suche)) {
+
+            static std::vector<Lesezeichen> ergebnisse;
 
             // X Größe sicherstellen
             if (ImGui::GetWindowSize().x < 580.f) ImGui::SetWindowSize({580.f, ImGui::GetWindowSize().y});
@@ -369,20 +373,20 @@ void Mainmenu::show_suche() {
             ImGui::SameLine();
             UI::push_icons();
             if (ImGui::Button("\uF002##btn_suche_start")) {
-                // TODO suche
+                ergebnisse = Uebersetzung::suche(notiz);
             }
             ImGui::PopFont();
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Suche starten");
             ImGui::NewLine();
 
             // Suchergebnisse auflisten
-            for (unsigned i = 0; i < Lesezeichen::alle().size(); ++i) {
-                const Lesezeichen& l = Lesezeichen::alle()[i];
+            for (unsigned i = 0; i < ergebnisse.size(); ++i) {
+                const Lesezeichen& l = ergebnisse[i];
                 if (Buch::get_buecher().count(l.buch) == 0) continue;
                 const Buch& l_buch = Buch::get_buecher().at(l.buch);
 
                 // Auswählen
-                ImGui::SameLine();
+                UI::push_icons();
                 if (std::string id("\uF061##suche_goto_" + std::to_string(i)); ImGui::Button(id.c_str())) {
                     buch = &l_buch;
                     auswahl_kapitel = l.kapitel;

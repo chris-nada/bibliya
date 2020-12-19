@@ -1,4 +1,5 @@
 #include "lesezeichen.hpp"
+#include "buch.hpp"
 
 #include <fstream>
 #include <cereal/archives/portable_binary.hpp>
@@ -39,4 +40,16 @@ void Lesezeichen::add(const Lesezeichen& neu) {
 void Lesezeichen::remove(std::size_t pos) {
     if (pos < lesezeichen.size()) lesezeichen.erase(lesezeichen.begin() + pos);
     save();
+}
+
+bool Lesezeichen::operator<(const Lesezeichen& rhs) const {
+    const auto pos1 = Buch::get_buecher().at(buch).get_pos();
+    const auto pos2 = Buch::get_buecher().at(rhs.buch).get_pos();
+    if (pos1 < pos2) return true;
+    if (pos2 < pos1) return false;
+    if (kapitel < rhs.kapitel) return true;
+    if (rhs.kapitel < kapitel) return false;
+    if (vers < rhs.vers) return true;
+    if (rhs.vers < vers) return false;
+    return notiz < rhs.notiz;
 }

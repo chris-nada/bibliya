@@ -186,3 +186,32 @@ void Uebersetzung::init(std::function<void(void)>& display_progress) {
         std::cout << "Ladebenchmark: " << (millis.count() / 1000.f) << 's' << std::endl;
     }
 }
+
+std::vector<Lesezeichen> Uebersetzung::suche(const std::string& suchbegriff) {
+    static std::mutex mutex;
+    std::vector<Lesezeichen> ergebnisse;
+    std::for_each(PAR_UNSEQ Buch::get_buecher().begin(), Buch::get_buecher().end(), [&](const auto& buch_paar) {
+        const Buch& buch = buch_paar.second;
+        for (unsigned kapitel = 1; kapitel <= buch.get_n_kapitel(); ++kapitel) {
+            for (unsigned vers = 1; vers <= buch.get_n_verse(kapitel); ++vers) {
+                const std::string& osis_id = buch.get_osis_id(kapitel, vers);
+                for (const auto& sprach_paar : uebersetzungen) {
+                    for (const auto& u_paar : sprach_paar.second) {
+                        const Uebersetzung& u = u_paar.second;
+                        const std::string& text = u.get_text(osis_id);
+
+                        // Begriff gefunden?
+                        if (text.find(suchbegriff) != std::string::npos) {
+                            std::lock_guard lock(mutex);
+                            ergebnisse.emplace_back("", buch.get_key(), kapitel, vers);
+                            goto naechster_vers;
+                        }
+                    }
+                }
+                naechster_vers:;
+            }
+        }
+    });
+    std::sort(ergebnisse.begin(), ergebnisse.end());
+    return ergebnisse;
+}

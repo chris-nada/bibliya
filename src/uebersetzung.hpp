@@ -1,6 +1,8 @@
 #pragma once
 
 #include "buch.hpp"
+#include "lesezeichen.hpp"
+
 #include <vector>
 #include <functional>
 
@@ -14,11 +16,13 @@ public:
 
     static const std::unordered_map<std::string, std::unordered_map<std::string, Uebersetzung>>& get_uebersetzungen();
 
+    static std::vector<Lesezeichen> suche(const std::string& suchbegriff);
+
+    const std::string& get_text(const std::string& osis_id) const;
+
     const std::string& get_name() const { return name; }
 
     const std::string& get_info() const { return info; }
-
-    const std::string& get_text(const std::string& osis_id) const;
 
 private:
 

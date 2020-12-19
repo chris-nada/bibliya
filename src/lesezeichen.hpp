@@ -25,6 +25,8 @@ public:
 
     unsigned vers;
 
+    bool operator<(const Lesezeichen& rhs) const;
+
     template<class Archiv>
     void serialize(Archiv& ar) {
         ar(notiz, buch, kapitel, vers);
