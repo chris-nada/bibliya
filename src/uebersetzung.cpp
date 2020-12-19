@@ -15,6 +15,10 @@
 
 std::unordered_map<std::string, std::unordered_map<std::string, Uebersetzung>> Uebersetzung::uebersetzungen;
 
+Uebersetzung::Uebersetzung() {
+    texte.reserve(Buch::get_buecher().size());
+}
+
 const std::string& Uebersetzung::get_text(const std::string& osis_id) const {
     try { return texte.at(osis_id); }
     catch (const std::exception& e) {

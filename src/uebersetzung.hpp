@@ -8,6 +8,8 @@ class Uebersetzung final {
 
 public:
 
+    Uebersetzung();
+
     static void init(std::function<void(void)>& display_progress);
 
     static const std::unordered_map<std::string, std::unordered_map<std::string, Uebersetzung>>& get_uebersetzungen();
