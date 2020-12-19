@@ -12,8 +12,14 @@ public:
     /// [ID] [Buch]
     static const std::unordered_map<std::string, Buch>& get_buecher() { return buecher; }
 
+    /// Liefert Buch nach Position.
+    static const Buch& get_buch(unsigned pos);
+
     /// Plaintext Name des Buches
     const std::string& get_name() const { return name; }
+
+    /// Getter: [ID]
+    const std::string& get_key() const { return key; }
 
     /// Getter: Position.
     unsigned get_pos() const { return pos; };
@@ -37,6 +43,9 @@ private:
 
     /// Name Plaintext
     std::string name;
+
+    /// Key (in map).
+    std::string key;
 
     /// Position
     unsigned pos;

@@ -48,3 +48,8 @@ const std::tuple<unsigned, std::string>& Buch::get_order(const std::string& id) 
     }
     return metadaten.at(id);
 }
+
+const Buch& Buch::get_buch(unsigned int pos) {
+    for (const auto& paar : buecher) if (paar.second.get_pos() == pos) return paar.second;
+    return buecher.begin()->second;
+}

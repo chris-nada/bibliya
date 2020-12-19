@@ -12,11 +12,16 @@
 #endif
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Nadabib", sf::Style::None);
+    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Bibliya", sf::Style::None);
     window.setFramerateLimit(60);
     ImGui::SFML::Init(window, false);
     ImPlot::CreateContext();
     UI::setup_style();
+
+    // Laden
+    std::function<void(std::function<void(void)>&)> init = Uebersetzung::init;
+    Laden laden(window);
+    laden.show(init);
 
     // Konsolenfenster verstecken
     #ifdef NDEBUG
@@ -26,10 +31,7 @@ int main() {
         #endif
     #endif
 
-    std::function<void(std::function<void(void)>&)> init = Uebersetzung::init;
-    Laden laden(window);
-    laden.show(init);
-
+    // Hauptanwendung
     Mainmenu menu(window);
     menu.show();
 

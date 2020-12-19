@@ -131,13 +131,14 @@ void Uebersetzung::init(std::function<void(void)>& display_progress) {
                                 if (Buch::buecher.count(tokens[0]) == 0) {
                                     std::lock_guard lock(buch_mutex);
                                     Buch::buecher[tokens[0]];
-                                    Buch::buecher.insert({tokens[0], Buch{}});
+                                    Buch& b = Buch::buecher.at(tokens[0]);
+                                    b.key = tokens[0];
+                                    b.pos = std::get<0>(Buch::get_order(tokens[0]));
+                                    b.name = std::get<1>(Buch::get_order(tokens[0]));
                                 }
                                 Buch& b = Buch::buecher.at(tokens[0]);
                                 const unsigned kapitel = std::stoul(tokens[1]);
                                 const unsigned vers = std::stoul(tokens[2]);
-                                b.pos = std::get<0>(Buch::get_order(tokens[0]));
-                                b.name = std::get<1>(Buch::get_order(tokens[0]));
                                 if (b.n_kapitel < kapitel) {
                                     std::lock_guard lock(buch_mutex);
                                     b.n_kapitel = kapitel;

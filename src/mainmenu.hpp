@@ -12,6 +12,8 @@ class Mainmenu final {
 
     static constexpr float FAKTOR_PART1 = 0.15f;
 
+    static constexpr float PADDING = 16.f;
+
 public:
 
     Mainmenu();
@@ -26,13 +28,19 @@ private: // UI
 
     void show_config();
 
-    void show_history();
+    void show_texte();
 
-    void versauswahl();
+    void ui_verswahl();
+
+    void ui_uebersetzungswahl();
+
+    void show_lesezeichen();
 
     sf::RenderWindow* window;
 
     bool open = true;
+
+    bool open_lesezeichen = false;
 
 private: // Arbeitsdaten
 
