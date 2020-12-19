@@ -101,8 +101,11 @@ void Mainmenu::show_texte() {
     static const auto WINDOW_FLAGS = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar;
     ImGui::Begin("##win_text", &open, WINDOW_FLAGS);
 
-    // Minimieren
-    if (ImGui::BeginMenuBar()) {
+    // Menübalken
+    UI::push_font(6);
+    bool begin_menu_bar = ImGui::BeginMenuBar();
+    ImGui::PopFont();
+    if (begin_menu_bar) {
         UI::push_icons();
         if (ImGui::Button("\uF02E##Lesezeichen")) {
             ImGui::SetWindowFocus(id_lesezeichen);
@@ -138,7 +141,7 @@ void Mainmenu::show_texte() {
 
     // Text(e)
     UI::push_font(3);
-    ImGui::SetCursorPosY(PADDING + 8);
+    ImGui::SetCursorPosY(PADDING * 2);
     if (!keys.empty()) {
         ImGui::Columns(keys.size(), "##texte", true);
         for (const std::string& key : keys) {

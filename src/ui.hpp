@@ -1,6 +1,6 @@
 #pragma once
 
-#include <imgui.h>
+#include <SFML/Graphics/Color.hpp>
 
 class UI final {
 

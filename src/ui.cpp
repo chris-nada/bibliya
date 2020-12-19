@@ -1,7 +1,8 @@
-#include <iostream>
-#include <imgui-SFML.h>
 #include "ui.hpp"
-#include "imgui.h"
+
+#include <iostream>
+#include <imgui.h>
+#include <imgui-SFML.h>
 
 void UI::setup_style() {
     ImGuiStyle& style = ImGui::GetStyle();
@@ -16,6 +17,7 @@ void UI::setup_style() {
 
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
+    // 12 14 16 18 20 22 24
     for (unsigned i = 12; i <= 24; i += 2) {
         io.Fonts->AddFontFromFileTTF(
                 "data/RursusCompactMono.ttf", static_cast<float>(i), nullptr, io.Fonts->GetGlyphRangesCyrillic()
