@@ -16,7 +16,7 @@ public:
 
     static const std::unordered_map<std::string, std::unordered_map<std::string, Uebersetzung>>& get_uebersetzungen();
 
-    static std::vector<Lesezeichen> suche(const std::string& suchbegriff);
+    static std::vector<Lesezeichen> suche(const std::string& suchbegriff, bool nur_nt);
 
     const std::string& get_text(const std::string& osis_id) const;
 

@@ -18,7 +18,6 @@ public:
     static void push_icons();
 
     /// Zeigt ein (?) mit gegebenem `text` als Maus-over an.
-    [[deprecated]]
     static void tooltip(const char* text);
 
 private:

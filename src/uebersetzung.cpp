@@ -187,28 +187,33 @@ void Uebersetzung::init(std::function<void(void)>& display_progress) {
     }
 }
 
-std::vector<Lesezeichen> Uebersetzung::suche(const std::string& suchbegriff) {
+std::vector<Lesezeichen> Uebersetzung::suche(const std::string& suchbegriff, bool nur_nt) {
     static std::mutex mutex;
     std::vector<Lesezeichen> ergebnisse;
     std::for_each(PAR_UNSEQ Buch::get_buecher().begin(), Buch::get_buecher().end(), [&](const auto& buch_paar) {
         const Buch& buch = buch_paar.second;
-        for (unsigned kapitel = 1; kapitel <= buch.get_n_kapitel(); ++kapitel) {
-            for (unsigned vers = 1; vers <= buch.get_n_verse(kapitel); ++vers) {
-                const std::string& osis_id = buch.get_osis_id(kapitel, vers);
-                for (const auto& sprach_paar : uebersetzungen) {
-                    for (const auto& u_paar : sprach_paar.second) {
-                        const Uebersetzung& u = u_paar.second;
-                        const std::string& text = u.get_text(osis_id);
+        if (!nur_nt ||
+                (buch.get_pos() >= Buch::get_buch("Matt").get_pos() &&
+                 buch.get_pos() <= Buch::get_buch("Rev").get_pos()))
+        {
+            for (unsigned kapitel = 1; kapitel <= buch.get_n_kapitel(); ++kapitel) {
+                for (unsigned vers = 1; vers <= buch.get_n_verse(kapitel); ++vers) {
+                    const std::string& osis_id = buch.get_osis_id(kapitel, vers);
+                    for (const auto& sprach_paar : uebersetzungen) {
+                        for (const auto& u_paar : sprach_paar.second) {
+                            const Uebersetzung& u = u_paar.second;
+                            const std::string& text = u.get_text(osis_id);
 
-                        // Begriff gefunden?
-                        if (text.find(suchbegriff) != std::string::npos) {
-                            std::lock_guard lock(mutex);
-                            ergebnisse.emplace_back("", buch.get_key(), kapitel, vers);
-                            goto naechster_vers;
+                            // Begriff gefunden?
+                            if (text.find(suchbegriff) != std::string::npos) {
+                                std::lock_guard lock(mutex);
+                                ergebnisse.emplace_back("", buch.get_key(), kapitel, vers);
+                                goto naechster_vers;
+                            }
                         }
                     }
+                    naechster_vers:;
                 }
-                naechster_vers:;
             }
         }
     });

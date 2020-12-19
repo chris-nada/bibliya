@@ -138,7 +138,7 @@ void Mainmenu::show_texte() {
 
     // Text(e)
     UI::push_font(3);
-    ImGui::SetCursorPosY(window->getSize().y / 10.f);
+    ImGui::SetCursorPosY(PADDING + 8);
     if (!keys.empty()) {
         ImGui::Columns(keys.size(), "##texte", true);
         for (const std::string& key : keys) {
@@ -156,6 +156,7 @@ void Mainmenu::show_texte() {
 
                     // Überschrift = Name d. Übersetzung
                     const Uebersetzung& u = paar.second.at(key);
+                    ImGui::SameLine();
                     ImGui::TextUnformatted(u.get_name().c_str());
                     ImGui::NewLine();
 
@@ -369,14 +370,20 @@ void Mainmenu::show_suche() {
 
             // Neue Suche
             static char notiz[0xFF] = "";
-            ImGui::InputTextWithHint("##input_suche", "Suchbegriff", notiz, IM_ARRAYSIZE(notiz));
+            static bool nur_nt = true;
+            if (ImGui::InputTextWithHint("##input_suche", "Suchbegriff", notiz, IM_ARRAYSIZE(notiz), ImGuiInputTextFlags_EnterReturnsTrue)) {
+                ergebnisse = Uebersetzung::suche(notiz, nur_nt);
+            }
             ImGui::SameLine();
             UI::push_icons();
-            if (ImGui::Button("\uF002##btn_suche_start")) {
-                ergebnisse = Uebersetzung::suche(notiz);
-            }
+            if (ImGui::Button("\uF002##btn_suche_start")) ergebnisse = Uebersetzung::suche(notiz, nur_nt);
             ImGui::PopFont();
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Suche starten");
+            UI::tooltip("Die Textsuche beachtet Groß-/Kleinschreibung.");
+            ImGui::SameLine();
+            ImGui::Checkbox("Nur NT", &nur_nt);
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Nur Neues Testament durchsuchen");
+
             ImGui::NewLine();
 
             // Suchergebnisse auflisten

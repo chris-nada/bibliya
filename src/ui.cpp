@@ -24,9 +24,9 @@ void UI::setup_style() {
 
     // Icons laden
     ImFontConfig config;
-    config.GlyphMinAdvanceX = 14.0f; // Use if you want to make the icon monospaced
-    static const ImWchar icon_ranges[] = {0xf000, 0xf2e0, 0};
-    io.Fonts->AddFontFromFileTTF("data/icons/fontawesome-webfont.ttf", 14.f, &config, icon_ranges);
+    config.GlyphMinAdvanceX = 16.0f; // Monospaced
+    static const ImWchar icon_ranges[] = {0xF000, 0xF2E0, 0};
+    io.Fonts->AddFontFromFileTTF("data/icons/fontawesome-webfont.ttf", 16.f, &config, icon_ranges);
     io.Fonts->Build();
     ImGui::SFML::UpdateFontTexture();
 }
@@ -46,7 +46,10 @@ void UI::push_icons() {
 }
 
 void UI::tooltip(const char* text) {
-    ImGui::TextDisabled("(?)");
+    push_icons();
+    ImGui::SameLine();
+    ImGui::TextDisabled("\uF059"); // (?)
+    ImGui::PopFont();
     if (ImGui::IsItemHovered()) {
         ImGui::BeginTooltip();
         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);

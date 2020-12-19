@@ -15,6 +15,9 @@ public:
     /// Liefert Buch nach Position.
     static const Buch& get_buch(unsigned pos);
 
+    /// Liefert Buch nach ID.
+    static const Buch& get_buch(const std::string& key) { return buecher.at(key); }
+
     /// Plaintext Name des Buches
     const std::string& get_name() const { return name; }
 
