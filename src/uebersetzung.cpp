@@ -32,7 +32,7 @@ void Uebersetzung::init(std::function<void(void)>& display_progress) {
     if (uebersetzungen.empty()) {
         // [Sprache] [Pfad]
         std::vector<std::pair<std::string, std::filesystem::directory_entry>> dateien;
-        for (const auto& sprachordner : std::filesystem::directory_iterator("data")) {
+        for (const auto& sprachordner : std::filesystem::directory_iterator("data/buecher")) {
             if (sprachordner.is_directory()) {
                 const std::string& sprache = sprachordner.path().filename().string();
                 for (const auto& datei : std::filesystem::directory_iterator(sprachordner)) {

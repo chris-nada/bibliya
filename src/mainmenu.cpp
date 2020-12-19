@@ -73,7 +73,7 @@ void Mainmenu::show_config() {
     ImGui::SetNextWindowSize({window->getSize().x * FAKTOR_PART1, static_cast<float>(window->getSize().y)});
     ImGui::Begin(win_id, nullptr, ImGuiWindowFlags_NoTitleBar);
 
-    UI::push_font(2);
+    UI::push_font();
 
     ImGui::SetCursorPosY(PADDING);
     ui_uebersetzungswahl();
@@ -88,7 +88,6 @@ void Mainmenu::show_config() {
     ImGui::NewLine();
     ImGui::Separator();
     ImGui::NewLine();
-    if (ImGui::Button("Lesezeichen")) open_lesezeichen = true;
 
     ImGui::PopFont();
     ImGui::End();
@@ -103,6 +102,13 @@ void Mainmenu::show_texte() {
 
     // Minimieren
     if (ImGui::BeginMenuBar()) {
+        UI::push_icons();
+        if (ImGui::Button("\uF02E##Lesezeichen")) open_lesezeichen = true;
+        ImGui::PopFont();
+        UI::push_font();
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Lesezeichen");
+        ImGui::PopFont();
+
         ImGui::SetCursorPosX(size_x - 40);
         if (ImGui::Button("_##minimieren")) {
             #ifdef __WIN32__
@@ -126,10 +132,14 @@ void Mainmenu::show_texte() {
             for (const auto& paar : Uebersetzung::get_uebersetzungen()) {
                 if (paar.second.count(key) != 0) {
                     // Entfernen (X)
-                    if (std::string btn_label = "(X)##del" + key; ImGui::Button(btn_label.c_str())) {
+                    if (std::string btn_label = "X##del" + key; ImGui::Button(btn_label.c_str())) {
                         keys.erase(key);
                         goto ausgang;
                     }
+                    UI::push_font();
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Übersetzung aus Ansicht entfernen");
+                    ImGui::PopFont();
+
                     // Überschrift = Name d. Übersetzung
                     const Uebersetzung& u = paar.second.at(key);
                     ImGui::TextUnformatted(u.get_name().c_str());
@@ -206,8 +216,11 @@ void Mainmenu::ui_uebersetzungswahl() {
         ImGui::EndCombo();
     }
     // Hinzufügen
-    ImGui::NewLine();
-    if (ImGui::Button("Hinzufügen")) keys.insert(uebersetzung_it->first);
+    ImGui::SameLine();
+    UI::push_icons();
+    if (ImGui::Button("\uF067##hinzufuegen")) keys.insert(uebersetzung_it->first);
+    ImGui::PopFont();
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Übersetzung hinzufügen");
 }
 
 void Mainmenu::ui_verswahl() {
@@ -270,45 +283,63 @@ void Mainmenu::ui_verswahl() {
 }
 
 void Mainmenu::show_lesezeichen() {
-    UI::push_font(2);
-    if (open_lesezeichen && ImGui::Begin("Lesezeichen##win_lesezeichen", &open_lesezeichen)) {
+    static const char* win_id = "Lesezeichen##win_lesezeichen";
+    if (open_lesezeichen) {
+        UI::push_font();
+        if (ImGui::Begin(win_id, &open_lesezeichen)) {
 
-        // Neues Lesezeichen
-        static char notiz[0xFF] = "";
-        ImGui::Text("%s %u:%u", buch->get_name().c_str(), auswahl_kapitel, auswahl_vers);
-        ImGui::SameLine();
-        ImGui::InputTextWithHint("##input_notiz", "Notiz", notiz, IM_ARRAYSIZE(notiz));
-        ImGui::SameLine();
-        if (ImGui::Button("Hinzufügen")) {
-            Lesezeichen l(notiz, buch->get_key(), auswahl_kapitel, auswahl_vers);
-            Lesezeichen::add(l);
-        }
-        ImGui::NewLine();
+            // X Größe sicherstellen
+            if (ImGui::GetWindowSize().x < 580.f) ImGui::SetWindowSize({580.f, ImGui::GetWindowSize().y});
 
-        // Alle Lesezeichen auflisten
-        for (unsigned i = 0; i < Lesezeichen::alle().size(); ++i) {
-            const Lesezeichen& l = Lesezeichen::alle()[i];
-            if (Buch::get_buecher().count(l.buch) == 0) continue;
-            const Buch& l_buch = Buch::get_buecher().at(l.buch);
-
-            // Löschen
-            if (std::string id("(X)##l_del_" + std::to_string(i)); ImGui::Button(id.c_str())) {
-                Lesezeichen::remove(i);
-                break;
-            }
-
-            // Auswählen
+            // Neues Lesezeichen
+            static char notiz[0xFF] = "";
+            ImGui::Text("%s %u:%u", buch->get_name().c_str(), auswahl_kapitel, auswahl_vers);
             ImGui::SameLine();
-            if (std::string id("(->)##l_goto_" + std::to_string(i)); ImGui::Button(id.c_str())) {
-                buch = &l_buch;
-                auswahl_kapitel = l.kapitel;
-                auswahl_vers = l.vers;
-                break;
-            }
+            ImGui::InputTextWithHint("##input_notiz", "Notiz", notiz, IM_ARRAYSIZE(notiz));
             ImGui::SameLine();
-            ImGui::Text("%s %u:%u %s", l_buch.get_name().c_str(), l.kapitel, l.vers, l.notiz.c_str());
+            UI::push_icons();
+            if (ImGui::Button("\uF067")) {
+                Lesezeichen l(notiz, buch->get_key(), auswahl_kapitel, auswahl_vers);
+                Lesezeichen::add(l);
+            }
+            ImGui::PopFont();
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Lesezeichen hinzufügen");
+            ImGui::NewLine();
+
+            // Alle Lesezeichen auflisten
+            for (unsigned i = 0; i < Lesezeichen::alle().size(); ++i) {
+                const Lesezeichen& l = Lesezeichen::alle()[i];
+                if (Buch::get_buecher().count(l.buch) == 0) continue;
+                const Buch& l_buch = Buch::get_buecher().at(l.buch);
+
+                // Löschen
+                UI::push_icons();
+                if (std::string id("\uF014##l_del_" + std::to_string(i)); ImGui::Button(id.c_str())) {
+                    Lesezeichen::remove(i);
+                    ImGui::PopFont();
+                    break;
+                }
+                ImGui::PopFont();
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Lesezeichen Entfernen");
+                UI::push_icons();
+
+                // Auswählen
+                ImGui::SameLine();
+                if (std::string id("\uF061##l_goto_" + std::to_string(i)); ImGui::Button(id.c_str())) {
+                    buch = &l_buch;
+                    auswahl_kapitel = l.kapitel;
+                    auswahl_vers = l.vers;
+                    ImGui::PopFont();
+                    break;
+                }
+                ImGui::PopFont();
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Gehe zu");
+
+                ImGui::SameLine();
+                ImGui::Text("%s %u:%u %s", l_buch.get_name().c_str(), l.kapitel, l.vers, l.notiz.c_str());
+            }
         }
         ImGui::End();
+        ImGui::PopFont();
     }
-    ImGui::PopFont();
 }

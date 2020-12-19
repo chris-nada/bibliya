@@ -21,6 +21,13 @@ void UI::setup_style() {
                 "data/RursusCompactMono.ttf", static_cast<float>(i), nullptr, io.Fonts->GetGlyphRangesCyrillic()
          );
     }
+
+    // Icons laden
+    ImFontConfig config;
+    config.GlyphMinAdvanceX = 14.0f; // Use if you want to make the icon monospaced
+    static const ImWchar icon_ranges[] = {0xf000, 0xf2e0, 0};
+    io.Fonts->AddFontFromFileTTF("data/icons/fontawesome-webfont.ttf", 14.f, &config, icon_ranges);
+    io.Fonts->Build();
     ImGui::SFML::UpdateFontTexture();
 }
 
@@ -30,6 +37,11 @@ void UI::push_font(unsigned size) {
         std::cerr << "[Fehler] Ungueltige Schriftgroesse: " << size << ", max = " << verfuegbar << std::endl;
     }
     ImFont* font = ImGui::GetIO().Fonts->Fonts[static_cast<int>(s)];
+    ImGui::PushFont(font);
+}
+
+void UI::push_icons() {
+    ImFont* font = ImGui::GetIO().Fonts->Fonts.back();
     ImGui::PushFont(font);
 }
 
