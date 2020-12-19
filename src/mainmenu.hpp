@@ -14,6 +14,10 @@ class Mainmenu final {
 
     static constexpr float PADDING = 16.f;
 
+    static inline const char* id_lesezeichen = "Lesezeichen##win_lesezeichen";
+
+    static inline const char* id_suche = "Suche##win_suchen";
+
 public:
 
     Mainmenu();
@@ -30,17 +34,21 @@ private: // UI
 
     void show_texte();
 
+    void show_lesezeichen();
+
+    void show_suche();
+
     void ui_verswahl();
 
     void ui_uebersetzungswahl();
-
-    void show_lesezeichen();
 
     sf::RenderWindow* window;
 
     bool open = true;
 
     bool open_lesezeichen = false;
+
+    bool open_suche = false;
 
 private: // Arbeitsdaten
 

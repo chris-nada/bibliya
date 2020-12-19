@@ -57,6 +57,7 @@ void Mainmenu::show() {
         show_config();
         show_texte();
         show_lesezeichen();
+        show_suche();
 
         // SFML Renders
         //
@@ -103,10 +104,20 @@ void Mainmenu::show_texte() {
     // Minimieren
     if (ImGui::BeginMenuBar()) {
         UI::push_icons();
-        if (ImGui::Button("\uF02E##Lesezeichen")) open_lesezeichen = true;
+        if (ImGui::Button("\uF02E##Lesezeichen")) {
+            ImGui::SetWindowFocus(id_lesezeichen);
+            open_lesezeichen = true;
+        }
         ImGui::PopFont();
         UI::push_font();
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Lesezeichen");
+        ImGui::PopFont();
+
+        UI::push_icons();
+        if (ImGui::Button("\uF002##Suche")) open_suche = true;
+        ImGui::PopFont();
+        UI::push_font();
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Suche");
         ImGui::PopFont();
 
         ImGui::SetCursorPosX(size_x - 40);
@@ -283,10 +294,9 @@ void Mainmenu::ui_verswahl() {
 }
 
 void Mainmenu::show_lesezeichen() {
-    static const char* win_id = "Lesezeichen##win_lesezeichen";
     if (open_lesezeichen) {
         UI::push_font();
-        if (ImGui::Begin(win_id, &open_lesezeichen)) {
+        if (ImGui::Begin(id_lesezeichen, &open_lesezeichen)) {
 
             // X Größe sicherstellen
             if (ImGui::GetWindowSize().x < 580.f) ImGui::SetWindowSize({580.f, ImGui::GetWindowSize().y});
@@ -333,10 +343,58 @@ void Mainmenu::show_lesezeichen() {
                     break;
                 }
                 ImGui::PopFont();
-                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Gehe zu");
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Anzeigen");
 
                 ImGui::SameLine();
                 ImGui::Text("%s %u:%u %s", l_buch.get_name().c_str(), l.kapitel, l.vers, l.notiz.c_str());
+            }
+        }
+        ImGui::End();
+        ImGui::PopFont();
+    }
+}
+
+void Mainmenu::show_suche() {
+    static const char* win_id = "Suche##win_suche";
+    if (open_suche) {
+        UI::push_font();
+        if (ImGui::Begin(win_id, &open_suche)) {
+
+            // X Größe sicherstellen
+            if (ImGui::GetWindowSize().x < 580.f) ImGui::SetWindowSize({580.f, ImGui::GetWindowSize().y});
+
+            // Neue Suche
+            static char notiz[0xFF] = "";
+            ImGui::InputTextWithHint("##input_suche", "Suchbegriff", notiz, IM_ARRAYSIZE(notiz));
+            ImGui::SameLine();
+            UI::push_icons();
+            if (ImGui::Button("\uF002##btn_suche_start")) {
+                // TODO suche
+            }
+            ImGui::PopFont();
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Suche starten");
+            ImGui::NewLine();
+
+            // Suchergebnisse auflisten
+            for (unsigned i = 0; i < Lesezeichen::alle().size(); ++i) {
+                const Lesezeichen& l = Lesezeichen::alle()[i];
+                if (Buch::get_buecher().count(l.buch) == 0) continue;
+                const Buch& l_buch = Buch::get_buecher().at(l.buch);
+
+                // Auswählen
+                ImGui::SameLine();
+                if (std::string id("\uF061##suche_goto_" + std::to_string(i)); ImGui::Button(id.c_str())) {
+                    buch = &l_buch;
+                    auswahl_kapitel = l.kapitel;
+                    auswahl_vers = l.vers;
+                    ImGui::PopFont();
+                    break;
+                }
+                ImGui::PopFont();
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Anzeigen");
+
+                ImGui::SameLine();
+                ImGui::Text("%s %u:%u", l_buch.get_name().c_str(), l.kapitel, l.vers);
             }
         }
         ImGui::End();
