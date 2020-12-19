@@ -1,11 +1,17 @@
 #include "uebersetzung.hpp"
 #include "sonstiges.hpp"
-#include <pugixml.hpp>
+
 #include <filesystem>
 #include <iostream>
 #include <fstream>
 #include <mutex>
-#include <execution>
+
+#if __has_include(<execution>)
+    #include <execution>
+    #define PAR_UNSEQ std::execution::par_unseq,
+#else
+    #define PAR_UNSEQ
+#endif
 
 std::unordered_map<std::string, std::unordered_map<std::string, Uebersetzung>> Uebersetzung::uebersetzungen;
 
@@ -40,7 +46,7 @@ void Uebersetzung::init(std::function<void(void)>& display_progress) {
         // Dateien einlesen
         static std::mutex u_mutex; // Hinzufügen neuer Übersetzungen
         static std::mutex anim_mutex;
-        std::for_each(std::execution::par_unseq, dateien.begin(), dateien.end(), [&](const auto& paar) {
+        std::for_each(PAR_UNSEQ dateien.begin(), dateien.end(), [&](const auto& paar) {
         //for (const auto& paar : dateien) {
             const std::string& sprache = paar.first;
             const std::filesystem::directory_entry& datei = paar.second;
