@@ -198,13 +198,17 @@ void Mainmenu::ui_uebersetzungswahl() {
     ImGui::TextUnformatted("Sprache");
     static std::vector<std::string> sprachen;
     static unsigned auswahl_sprache = 0;
+    static unsigned auswahl_uebersetzung = 0;
     if (sprachen.empty()) for (const auto& paar : Uebersetzung::get_uebersetzungen()) {
-            sprachen.push_back(paar.first);
-        }
+        sprachen.push_back(paar.first);
+    }
     if (ImGui::BeginCombo("##SpracheCombo", sprachen[auswahl_sprache].c_str())) {
         for (unsigned i = 0; i < sprachen.size(); ++i) {
             const bool is_selected = (auswahl_sprache == i);
-            if (ImGui::Selectable(sprachen[i].c_str(), is_selected)) auswahl_sprache = i;
+            if (ImGui::Selectable(sprachen[i].c_str(), is_selected)) {
+                auswahl_sprache = i;
+                auswahl_uebersetzung = 0;
+            }
             if (is_selected) ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();
@@ -214,7 +218,6 @@ void Mainmenu::ui_uebersetzungswahl() {
     ImGui::NewLine();
     ImGui::TextUnformatted("Übersetzung");
     static const std::unordered_map<std::string, Uebersetzung>* uebersetzungen;
-    static unsigned auswahl_uebersetzung = 0;
     uebersetzungen = &Uebersetzung::get_uebersetzungen().at(sprachen.at(auswahl_sprache));
     if (auswahl_uebersetzung > uebersetzungen->size()) auswahl_uebersetzung = 0;
     auto uebersetzung_it = uebersetzungen->cbegin();
