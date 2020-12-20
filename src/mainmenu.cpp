@@ -7,6 +7,7 @@
 #include <SFML/Window/Event.hpp>
 #include <cereal/archives/portable_binary.hpp>
 #include <cereal/types/unordered_set.hpp>
+#include <cereal/types/unordered_map.hpp>
 #include <cereal/types/string.hpp>
 #include <filesystem>
 #include <fstream>
@@ -143,43 +144,45 @@ void Mainmenu::show_texte() {
     UI::push_font(3);
     ImGui::SetCursorPosY(PADDING * 2);
     if (!keys.empty()) {
-        ImGui::Columns(keys.size(), "##texte", true);
-        for (const std::string& key : keys) {
-            // In allen Sprachen suchen // TODO suboptimal
-            for (const auto& paar : Uebersetzung::get_uebersetzungen()) {
-                if (paar.second.count(key) != 0) {
-                    // Entfernen (X)
-                    if (std::string btn_label = "X##del" + key; ImGui::Button(btn_label.c_str())) {
-                        keys.erase(key);
-                        goto ausgang;
-                    }
-                    UI::push_font();
-                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Übersetzung aus Ansicht entfernen");
-                    ImGui::PopFont();
 
-                    // Überschrift = Name d. Übersetzung
-                    const Uebersetzung& u = paar.second.at(key);
-                    ImGui::SameLine();
-                    ImGui::TextUnformatted(u.get_name().c_str());
-                    ImGui::NewLine();
+        // Columns
+        unsigned int anzahl = 0;
+        for (const auto& lang_keys : keys) anzahl += lang_keys.second.size();
+        ImGui::Columns(anzahl, "##texte", true);
 
-                    // Textdarstellung
-                    auto verstext = [&](unsigned kapitel, unsigned vers) {
-                        const std::string& text = u.get_text(buch->get_osis_id(kapitel, vers));
-                        ImGui::TextColored(UI::FARBE1, "%u", vers);
-                        ImGui::TextWrapped("%s", text.c_str());
-                    };
-
-                    // Verse auflisten
-                    unsigned vers_start = auswahl_vers;
-                    unsigned vers_ende  = auswahl_vers;
-                    if      (auswahl_modus == 1) vers_ende = auswahl_vers + 4;
-                    else if (auswahl_modus == 2) vers_ende = buch->get_n_verse(auswahl_kapitel);
-                    for (unsigned v = vers_start; v <= vers_ende && v <= buch->get_n_verse(auswahl_kapitel); ++v) {
-                        verstext(auswahl_kapitel, v);
-                    }
-                    ImGui::NextColumn();
+        for (auto& lang_keys : keys) { // [lang_key] [set<string>]
+            for (const auto& key : lang_keys.second) { // string (Übersetungs-Key)
+                // Entfernen (X)
+                if (std::string btn_label = "X##del" + key; ImGui::Button(btn_label.c_str())) {
+                    lang_keys.second.erase(key);
+                    goto ausgang;
                 }
+                UI::push_font();
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Übersetzung aus Ansicht entfernen");
+                ImGui::PopFont();
+
+                // Überschrift = Name d. Übersetzung
+                const Uebersetzung& u = Uebersetzung::get_uebersetzungen().at(lang_keys.first).at(key);
+                ImGui::SameLine();
+                ImGui::TextUnformatted(u.get_name().c_str());
+                ImGui::NewLine();
+
+                // Textdarstellung
+                auto verstext = [&](unsigned kapitel, unsigned vers) {
+                    const std::string& text = u.get_text(buch->get_osis_id(kapitel, vers));
+                    ImGui::TextColored(UI::FARBE1, "%u", vers);
+                    ImGui::TextWrapped("%s", text.c_str());
+                };
+
+                // Verse auflisten
+                unsigned vers_start = auswahl_vers;
+                unsigned vers_ende  = auswahl_vers;
+                if      (auswahl_modus == 1) vers_ende = auswahl_vers + 4;
+                else if (auswahl_modus == 2) vers_ende = buch->get_n_verse(auswahl_kapitel);
+                for (unsigned v = vers_start; v <= vers_ende && v <= buch->get_n_verse(auswahl_kapitel); ++v) {
+                    verstext(auswahl_kapitel, v);
+                }
+                ImGui::NextColumn();
             }
         }
         ausgang:
@@ -236,7 +239,7 @@ void Mainmenu::ui_uebersetzungswahl() {
     // Hinzufügen
     ImGui::SameLine();
     UI::push_icons();
-    if (ImGui::Button("\uF067##hinzufuegen")) keys.insert(uebersetzung_it->first);
+    if (ImGui::Button("\uF067##uebersetzung_plus")) keys[sprachen.at(auswahl_sprache)].insert(uebersetzung_it->first);
     ImGui::PopFont();
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("Übersetzung hinzufügen");
 }

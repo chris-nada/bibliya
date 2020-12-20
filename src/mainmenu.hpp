@@ -52,7 +52,8 @@ private: // UI
 
 private: // Arbeitsdaten
 
-    std::unordered_set<std::string> keys;
+    /// Anzuzeigende Übersetzungen [Sprache] -> Set von [ID]
+    std::unordered_map<std::string, std::unordered_set<std::string>> keys;
 
     const Buch* buch;
 
