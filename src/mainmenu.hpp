@@ -55,7 +55,7 @@ private: // Arbeitsdaten
     /// Anzuzeigende Übersetzungen [Sprache] -> Set von [ID]
     std::unordered_map<std::string, std::unordered_set<std::string>> keys;
 
-    const Buch* buch;
+    const Buch* buch = nullptr;
 
     unsigned auswahl_kapitel = 1;
 

@@ -14,7 +14,7 @@ include_directories(SYSTEM libs/implot)         # da5b4ab       29 09 2020      
 
 # Build Config
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -m64 -mtune=generic") # Kompileroptimierungen
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -m64 -mtune=generic") # Kompileroptimierungen #-g
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s")
     endif()
