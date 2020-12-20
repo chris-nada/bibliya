@@ -2,7 +2,7 @@
 
 **Bibliya ist freie Software zum Anzeigen von Bibeltexten.**
 
-![image](https://gitlab.com/chris_nada/bibliya/-/wikis/uploads/ef0efe9a847010b7c2188a4944a2915c/image.png)
+![Screenshot](bildschirmfoto.png)
 
 + Es können mehrere Bibelübersetzungen zur Textanalyse nebeneinander verglichen werden.
 + Die Übersetzungen werden aus OSIS-Dateien eingelesen, **einige freie Übersetzungen sind bereits enthalten**. 
@@ -12,8 +12,12 @@
 
 # Download
 **Portable. Einfach irgendwo entpacken und mit `bibliya.exe` starten.**
-### Version 2020_12_18
-+ **Windows** [Download](https://drive.google.com/file/d/1AbgRRBiBqjHNMqs08IzDzE_lexQ1w3nX/view?usp=sharing) (17MB, Google Drive)
+
+### Version 2020_12_20
++ **Windows** [Download](https://drive.google.com/file/d/1AbgRRBiBqjHNMqs08IzDzE_lexQ1w3nX) (17MB, Google Drive)
+
+### Version 2020_12_18 _veraltet_
++ **Windows** [Download](https://drive.google.com/file/d/1rGpm8_RG0LJr9876c9H61oPlWD6WYFYY) (17MB, Google Drive)
 
 # Systemanforderungen
 (für obige herunterladbare Versionen. Falls der Quelltext selbst kompiliert wird, können die Anforderungen abweichen)
