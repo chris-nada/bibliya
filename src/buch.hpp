@@ -41,6 +41,8 @@ private:
     /// <Position,Name>, (id)
     static const std::tuple<unsigned, std::string>& get_order(const std::string& id);
 
+    static void buch_osis_check(const std::string& osis_id, unsigned kapitel, unsigned vers);
+
     /// Key: Kapitel [key], Value: Kapitel
     static std::unordered_map<std::string, Buch> buecher;
 

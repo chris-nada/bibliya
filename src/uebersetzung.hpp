@@ -5,8 +5,12 @@
 
 #include <vector>
 #include <functional>
+#include <filesystem>
+#include <mutex>
 
 class Uebersetzung final {
+
+    static inline std::mutex uebersetzungs_mutex, anim_mutex;
 
 public:
 
@@ -26,8 +30,16 @@ public:
 
 private:
 
+    static void import_osis(const std::string& sprache, const std::filesystem::directory_entry& datei,
+                            std::function<void(void)>& display_progress);
+
+    static void import_csv(const std::string& sprache, const std::filesystem::directory_entry& datei,
+                           std::function<void(void)>& display_progress);
+
     /// Key: Sprache [de], Value: Uebersetzungen
     static std::unordered_map<std::string, std::unordered_map<std::string, Uebersetzung>> uebersetzungen;
+
+private:
 
     /// Name der Übersetzung
     std::string name;

@@ -143,11 +143,11 @@ void Mainmenu::show_texte() {
     // Text(e)
     UI::push_font(3);
     ImGui::SetCursorPosY(PADDING * 2);
-    if (!keys.empty()) {
 
-        // Columns
-        unsigned int anzahl = 0;
-        for (const auto& lang_keys : keys) anzahl += lang_keys.second.size();
+    // Columns
+    int anzahl = 0;
+    for (const auto& lang_keys : keys) anzahl += lang_keys.second.size();
+    if (anzahl > 0) {
         ImGui::Columns(anzahl, "##texte", true);
 
         for (auto& lang_keys : keys) { // [lang_key] [set<string>]

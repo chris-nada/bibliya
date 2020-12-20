@@ -53,3 +53,29 @@ const Buch& Buch::get_buch(unsigned int pos) {
     for (const auto& paar : buecher) if (paar.second.get_pos() == pos) return paar.second;
     return buecher.begin()->second;
 }
+
+void Buch::buch_osis_check(const std::string& osis_id, unsigned int kapitel, unsigned int vers) {
+    static std::mutex buch_mutex;
+    // Buch anlegen?
+    if (Buch::buecher.count(osis_id) == 0) {
+        std::lock_guard lock(buch_mutex);
+        Buch::buecher[osis_id];
+        Buch& b = Buch::buecher.at(osis_id);
+        b.key = osis_id;
+        b.pos = std::get<0>(Buch::get_order(osis_id));
+        b.name = std::get<1>(Buch::get_order(osis_id));
+    }
+    Buch& b = Buch::buecher.at(osis_id);
+    if (b.n_kapitel < kapitel) {
+        std::lock_guard lock(buch_mutex);
+        b.n_kapitel = kapitel;
+    }
+    if (b.get_n_verse(kapitel) < vers) {
+        std::lock_guard lock(buch_mutex);
+        b.n_verse[kapitel] = vers;
+    }
+    if (b.get_osis_id(kapitel, vers).empty()) {
+        std::lock_guard lock(buch_mutex);
+        b.osis_ids[kapitel][vers] = osis_id + "." + std::to_string(kapitel) + "." + std::to_string(vers);
+    }
+}
