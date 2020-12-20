@@ -224,7 +224,8 @@ void Mainmenu::ui_uebersetzungswahl() {
             const bool is_selected = (auswahl_uebersetzung == i);
             auto temp_it = uebersetzungen->cbegin();
             std::advance(temp_it, i);
-            if (ImGui::Selectable(temp_it->second.get_name().c_str(), is_selected)) auswahl_uebersetzung = i;
+            std::string select_id = temp_it->second.get_name() + "##u_sel_" + sprachen[auswahl_sprache] + temp_it->first;
+            if (ImGui::Selectable(select_id.c_str(), is_selected)) auswahl_uebersetzung = i;
             const std::string& info = temp_it->second.get_info();
             //if (is_selected) ImGui::SetItemDefaultFocus();
             if (!info.empty() && ImGui::IsItemHovered()) {

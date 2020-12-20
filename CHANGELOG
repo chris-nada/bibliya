@@ -7,9 +7,11 @@ v
 + Neu: Icons + Tooltips
 + Neu: Suche
 + Neu: Import aus CSV (Exportiert aus SQLite3)
++ Neu: Unterstützung weiterer Glyphen (Zeichensätze)
 + Etc: Konsolenfenster versteckt
 + Fix: Mehrere Übersetzung mit gleichen Namen in versch. Sprachen
 + Fix: Verbesserter OSIS-Import
++ TODO Laden map.at gelöschte Übersetzung
 
 v2020_12_18
 + Release 1

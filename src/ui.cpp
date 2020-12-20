@@ -17,10 +17,12 @@ void UI::setup_style() {
 
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
+    static ImWchar glyph_range[] = {0x0020, 0xFFEF};
     // 12 14 16 18 20 22 24
     for (unsigned i = 12; i <= 24; i += 2) {
         io.Fonts->AddFontFromFileTTF(
-                "data/RursusCompactMono.ttf", static_cast<float>(i), nullptr, io.Fonts->GetGlyphRangesCyrillic()
+                "data/RursusCompactMono.ttf", static_cast<float>(i), nullptr,
+                glyph_range
          );
     }
 
