@@ -1,6 +1,7 @@
 + TODO ComboBox auf Aktuelles Buch einrasten
++ TODO Laden map.at gelöschte Übersetzung
 
-v
+v2020_12_18
 + Neu: Fenster Minimieren
 + Neu: Arbeitsstand wird gespeichert
 + Neu: Lesezeichen
@@ -9,9 +10,9 @@ v
 + Neu: Import aus CSV (Exportiert aus SQLite3)
 + Neu: Unterstützung weiterer Glyphen (Zeichensätze)
 + Etc: Konsolenfenster versteckt
++ Etc: Verbesserter OSIS-Import
 + Fix: Mehrere Übersetzung mit gleichen Namen in versch. Sprachen
-+ Fix: Verbesserter OSIS-Import
-+ TODO Laden map.at gelöschte Übersetzung
++ Fix: SIGSEGV Übersetzungsauswahl
 
 v2020_12_18
 + Release 1
