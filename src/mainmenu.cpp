@@ -145,11 +145,13 @@ void Mainmenu::show_texte() {
     ImGui::SetCursorPosY(PADDING * 2);
 
     // Columns
-    int anzahl = 0;
+    unsigned anzahl = 0;
     for (const auto& lang_keys : keys) anzahl += lang_keys.second.size();
     if (anzahl > 0) {
         ImGui::Columns(anzahl, "##texte", true);
+        std::vector<const Uebersetzung*> ubersetzungen;
 
+        // Überschriften
         for (auto& lang_keys : keys) { // [lang_key] [set<string>]
             for (const auto& key : lang_keys.second) { // string (Übersetungs-Key)
                 // Entfernen (X)
@@ -163,29 +165,40 @@ void Mainmenu::show_texte() {
 
                 // Überschrift = Name d. Übersetzung
                 const Uebersetzung& u = Uebersetzung::get_uebersetzungen().at(lang_keys.first).at(key);
+                ubersetzungen.push_back(&u);
                 ImGui::SameLine();
                 ImGui::TextUnformatted(u.get_name().c_str());
                 ImGui::NewLine();
-
-                // Textdarstellung
-                auto verstext = [&](unsigned kapitel, unsigned vers) {
-                    const std::string& text = u.get_text(buch->get_osis_id(kapitel, vers));
-                    ImGui::TextColored(UI::FARBE1, "%u", vers);
-                    ImGui::TextWrapped("%s", text.c_str());
-                };
-
-                // Verse auflisten
-                unsigned vers_start = auswahl_vers;
-                unsigned vers_ende  = auswahl_vers;
-                if      (auswahl_modus == 1) vers_ende = auswahl_vers + 4;
-                else if (auswahl_modus == 2) vers_ende = buch->get_n_verse(auswahl_kapitel);
-                for (unsigned v = vers_start; v <= vers_ende && v <= buch->get_n_verse(auswahl_kapitel); ++v) {
-                    verstext(auswahl_kapitel, v);
-                }
                 ImGui::NextColumn();
             }
         }
         ausgang:
+
+        // Textdarstellungsfunktion
+        auto verstext = [&](const Uebersetzung& u, unsigned kapitel, unsigned vers) {
+            const std::string& text = u.get_text(buch->get_osis_id(kapitel, vers));
+            ImGui::TextColored(UI::FARBE1, "%u", vers);
+            ImGui::TextWrapped("%s", text.c_str());
+        };
+
+        // Verse auflisten
+        unsigned vers_start = auswahl_vers;
+        unsigned vers_ende = auswahl_vers;
+        if (auswahl_modus == 1) vers_ende = auswahl_vers + 4;
+        else if (auswahl_modus == 2) vers_ende = buch->get_n_verse(auswahl_kapitel);
+
+        float max_y = ImGui::GetCursorPosY();
+        float max_y_new = ImGui::GetCursorPosY();
+        for (unsigned v = vers_start; v <= vers_ende && v <= buch->get_n_verse(auswahl_kapitel); ++v) {
+            for (unsigned i = 0; i < ubersetzungen.size(); ++i) {
+                if (i == 0) max_y = max_y_new;
+                ImGui::SetCursorPosY(max_y);
+                const Uebersetzung* u = ubersetzungen[i];
+                verstext(*u, auswahl_kapitel, v);
+                max_y_new = std::max(max_y_new, ImGui::GetCursorPosY());
+                ImGui::NextColumn();
+            }
+        }
         ImGui::Columns();
     }
     ImGui::PopFont();
