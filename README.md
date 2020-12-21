@@ -14,9 +14,6 @@
 **Portable. Einfach irgendwo entpacken und mit `bibliya.exe` starten.**
 
 ### Version 2020_12_20
-+ **Windows** [Download](https://drive.google.com/file/d/1rGpm8_RG0LJr9876c9H61oPlWD6WYFYY) (17MB, Google Drive)
-
-### Version 2020_12_18 _veraltet_
 + **Windows** [Download](https://drive.google.com/file/d/19nk4hd9sUFcNDow1cXqgNTKCZw8h7WGe) (17MB, Google Drive)
 
 # Systemanforderungen
