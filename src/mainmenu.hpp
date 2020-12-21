@@ -18,6 +18,8 @@ class Mainmenu final {
 
     static inline const char* id_suche = "Suche##win_suchen";
 
+    static inline const char* id_einstellungen = "Einstellungen##win_einstellungen";
+
 public:
 
     Mainmenu();
@@ -38,6 +40,8 @@ private: // UI
 
     void show_suche();
 
+    void show_einstellungen();
+
     void ui_verswahl();
 
     void ui_uebersetzungswahl();
@@ -49,6 +53,8 @@ private: // UI
     bool open_lesezeichen = false;
 
     bool open_suche = false;
+
+    bool open_einstellungen = false;
 
 private: // Arbeitsdaten
 
@@ -63,5 +69,11 @@ private: // Arbeitsdaten
 
     /// 0 = Einzeln, 1 = Fünf Verse, 2 = Kapitel
     int auswahl_modus = 0;
+
+    unsigned text_groesse = 3;
+
+    ImVec4 farbe_text = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+
+    ImVec4 farbe_hg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
 
 };

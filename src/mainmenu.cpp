@@ -59,6 +59,7 @@ void Mainmenu::show() {
         show_texte();
         show_lesezeichen();
         show_suche();
+        show_einstellungen();
 
         // SFML Renders
         //
@@ -125,6 +126,17 @@ void Mainmenu::show_texte() {
         ImGui::PopFont();
         UI::push_font();
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Suche");
+        ImGui::PopFont();
+
+
+        UI::push_icons();
+        if (ImGui::Button("\uF013##Einstellungen")) {
+            ImGui::SetWindowFocus(id_einstellungen);
+            open_einstellungen = true;
+        }
+        ImGui::PopFont();
+        UI::push_font();
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Einstellungen");
         ImGui::PopFont();
 
         ImGui::SetCursorPosX(size_x - 40);
@@ -444,6 +456,32 @@ void Mainmenu::show_suche() {
                 ImGui::SameLine();
                 ImGui::Text("%s %u:%u", l_buch.get_name().c_str(), l.kapitel, l.vers);
             }
+        }
+        ImGui::End();
+        ImGui::PopFont();
+    }
+}
+
+void Mainmenu::show_einstellungen() {
+    if (open_einstellungen) {
+        UI::push_font();
+        if (ImGui::Begin(id_einstellungen, &open_einstellungen)) {
+            // X Größe sicherstellen
+
+            // Schriftgröße
+            static const unsigned STEP = 1;
+            ImGui::SetNextItemWidth(160);
+            ImGui::InputScalar("Textgröße##input_schriftgroesse", ImGuiDataType_U32, &text_groesse, &STEP, nullptr, "%u");
+            text_groesse = std::clamp(text_groesse, 1u, 6u);
+
+            // Farben
+            const auto FLAGS = ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoAlpha;
+            ImGui::NewLine();
+            ImGui::SetNextItemWidth(160);
+            ImGui::ColorPicker3("Textfarbe", reinterpret_cast<float*>(&farbe_text), FLAGS);
+            ImGui::NewLine();
+            ImGui::SetNextItemWidth(160);
+            ImGui::ColorPicker3("Hintergrundfarbe", reinterpret_cast<float*>(&farbe_hg), FLAGS);
         }
         ImGui::End();
         ImGui::PopFont();
