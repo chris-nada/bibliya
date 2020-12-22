@@ -19,12 +19,21 @@
 
 Mainmenu::Mainmenu() {
     if (std::ifstream in("data/save.dat", std::ios::binary); in.good()) {
-        cereal::PortableBinaryInputArchive boa(in);
-        unsigned buch_pos;
-        boa(keys, buch_pos, auswahl_kapitel, auswahl_vers, auswahl_modus);
-        for (const auto& buch_paar : Buch::get_buecher()) if (buch_paar.second.get_pos() == buch_pos) {
-            buch = &buch_paar.second;
-            break;
+        try {
+            cereal::PortableBinaryInputArchive boa(in);
+            unsigned buch_pos, farbe_hg_temp, farbe_text_temp;
+            boa(keys, buch_pos, auswahl_kapitel, auswahl_vers, auswahl_modus, text_groesse,
+                farbe_hg_temp, farbe_text_temp);
+            farbe_hg   = ImGui::ColorConvertU32ToFloat4(farbe_hg_temp);
+            farbe_text = ImGui::ColorConvertU32ToFloat4(farbe_text_temp);
+            for (const auto& buch_paar : Buch::get_buecher()) {
+                if (buch_paar.second.get_pos() == buch_pos) {
+                    buch = &buch_paar.second;
+                    break;
+                }
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Arbeitsstand konnte nicht importiert werden. Veraltete Version?" << std::endl;
         }
     }
     if (buch == nullptr) buch = &Buch::get_buch(1);
@@ -37,7 +46,8 @@ Mainmenu::Mainmenu(sf::RenderWindow& window) : Mainmenu() {
 Mainmenu::~Mainmenu() {
     if (std::ofstream out("data/save.dat", std::ios::binary); out.good()) {
         cereal::PortableBinaryOutputArchive boa(out);
-        boa(keys, buch->get_pos(), auswahl_kapitel, auswahl_vers, auswahl_modus);
+        boa(keys, buch->get_pos(), auswahl_kapitel, auswahl_vers, auswahl_modus, text_groesse,
+            ImGui::ColorConvertFloat4ToU32(farbe_hg), ImGui::ColorConvertFloat4ToU32(farbe_text));
     }
 }
 
@@ -55,6 +65,7 @@ void Mainmenu::show() {
         ImGui::SFML::Update(*window, deltaClock.restart());
         window->clear();
 
+        farben_setzen();
         show_config();
         show_texte();
         show_lesezeichen();
@@ -153,7 +164,7 @@ void Mainmenu::show_texte() {
     }
 
     // Text(e)
-    UI::push_font(3);
+    UI::push_font(text_groesse);
     ImGui::SetCursorPosY(PADDING * 2);
 
     // Columns
@@ -486,4 +497,9 @@ void Mainmenu::show_einstellungen() {
         ImGui::End();
         ImGui::PopFont();
     }
+}
+
+void Mainmenu::farben_setzen() {
+    ImGui::GetStyle().Colors[ImGuiCol_Text] = farbe_text;
+    ImGui::GetStyle().Colors[ImGuiCol_WindowBg] = farbe_hg;
 }

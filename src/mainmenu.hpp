@@ -46,6 +46,8 @@ private: // UI
 
     void ui_uebersetzungswahl();
 
+    void farben_setzen();
+
     sf::RenderWindow* window;
 
     bool open = true;

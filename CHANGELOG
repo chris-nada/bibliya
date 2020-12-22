@@ -1,7 +1,10 @@
 v
 + Neu: Verse beginnen auf gleicher Höhe
++ Neu: Schriftgröße einstellbar
 + TODO ComboBox auf Aktuelles Buch einrasten
 + TODO Laden map.at gelöschte Übersetzung
++ TODO Einstellungen
++ TODO Übersetzungsmanager mit integrietem Download
 
 v2020_12_20
 + Neu: Fenster Minimieren
@@ -14,7 +17,7 @@ v2020_12_20
 + Etc: Konsolenfenster versteckt
 + Etc: Verbesserter OSIS-Import
 + Fix: Mehrere Übersetzung mit gleichen Namen in versch. Sprachen
-+ Fix: SIGSEGV Übersetzungsauswahl
++ Fix: Absturz bei der  Übersetzungsauswahl
 
 v2020_12_18
 + Release 1
