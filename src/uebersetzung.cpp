@@ -115,6 +115,7 @@ void Uebersetzung::import_osis(
 
         Uebersetzung u;
         std::string trennchar;
+        std::string letzter_txt_osis_id;
 
         for (std::string s; std::getline(in, s);) {
 
@@ -199,12 +200,20 @@ void Uebersetzung::import_osis(
 
                 // Speichern
                 u.texte[osis_id].append(txt);
+                letzter_txt_osis_id = osis_id;
             }
-                // Titel
+            // Weiterer Text
+            else if (!letzter_txt_osis_id.empty() && s.find('>') != std::string::npos &&
+                    (s.find("<hi")  != std::string::npos ||
+                     s.find("</hi") != std::string::npos)) {
+                std::string z = s.substr(s.find('>') + 1);
+                if (!z.empty()) u.texte[letzter_txt_osis_id].append(z);
+            }
+            // Titel
             else if (u.name.empty() && s.find("title") != std::string::npos) {
                 u.name = Sonstiges::get_text_zwischen(s);
             }
-                // Beschreibung
+            // Beschreibung
             else if (u.info.empty() && s.find("description") != std::string::npos) {
                 u.info = Sonstiges::get_text_zwischen(s);
             }

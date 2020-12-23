@@ -477,21 +477,20 @@ void Mainmenu::show_einstellungen() {
     if (open_einstellungen) {
         UI::push_font();
         if (ImGui::Begin(id_einstellungen, &open_einstellungen)) {
-            // X Größe sicherstellen
-
             // Schriftgröße
             static const unsigned STEP = 1;
-            ImGui::SetNextItemWidth(160);
+            static const unsigned WIDTH = 160;
+            ImGui::SetNextItemWidth(WIDTH);
             ImGui::InputScalar("Textgröße##input_schriftgroesse", ImGuiDataType_U32, &text_groesse, &STEP, nullptr, "%u");
             text_groesse = std::clamp(text_groesse, 1u, 6u);
 
             // Farben
             const auto FLAGS = ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoAlpha;
             ImGui::NewLine();
-            ImGui::SetNextItemWidth(160);
+            ImGui::SetNextItemWidth(WIDTH);
             ImGui::ColorPicker3("Textfarbe", reinterpret_cast<float*>(&farbe_text), FLAGS);
             ImGui::NewLine();
-            ImGui::SetNextItemWidth(160);
+            ImGui::SetNextItemWidth(WIDTH);
             ImGui::ColorPicker3("Hintergrundfarbe", reinterpret_cast<float*>(&farbe_hg), FLAGS);
         }
         ImGui::End();
