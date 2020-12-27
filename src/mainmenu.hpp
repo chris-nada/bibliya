@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ui.hpp"
+
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <unordered_map>
 #include <deque>
@@ -10,23 +12,32 @@ class Buch;
 
 class Mainmenu final {
 
+    /// Horizontale Aufteilung
     static constexpr float FAKTOR_PART1 = 0.15f;
 
+    /// Standardabstand z.B. oberer Rand
     static constexpr float PADDING = 16.f;
 
+    /// ID Lesezeichenfenster
     static inline const char* id_lesezeichen = "Lesezeichen##win_lesezeichen";
 
+    /// ID Suchfenster
     static inline const char* id_suche = "Suche##win_suchen";
 
+    /// ID Einstellungenfenster
     static inline const char* id_einstellungen = "Einstellungen##win_einstellungen";
 
 public:
 
+    /// Ctor.
     Mainmenu();
 
+    /// Standard-Ctor über SF-Fenster.
     explicit Mainmenu(sf::RenderWindow& window);
 
+    /// Destruktor.
     ~Mainmenu();
+
 
     void show();
 
@@ -50,6 +61,7 @@ private: // UI
 
     sf::RenderWindow* window;
 
+    /// Loop.
     bool open = true;
 
     bool open_lesezeichen = false;
@@ -77,5 +89,7 @@ private: // Arbeitsdaten
     ImVec4 farbe_text = ImGui::GetStyleColorVec4(ImGuiCol_Text);
 
     ImVec4 farbe_hg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
+
+    ImVec4 farbe_versziffern = ImColor(UI::FARBE1);
 
 };

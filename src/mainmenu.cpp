@@ -1,5 +1,4 @@
 #include "mainmenu.hpp"
-#include "ui.hpp"
 #include "uebersetzung.hpp"
 #include "lesezeichen.hpp"
 
@@ -98,20 +97,15 @@ void Mainmenu::show_config() {
     ImGui::NewLine();
     ui_verswahl();
 
-    // Merkzettel
-    ImGui::NewLine();
-    ImGui::Separator();
-    ImGui::NewLine();
-
     ImGui::PopFont();
     ImGui::End();
 }
 
 void Mainmenu::show_texte() {
+    static const auto WINDOW_FLAGS = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar;
     const float size_x = window->getSize().x - window->getSize().x * FAKTOR_PART1;
     ImGui::SetNextWindowPos({window->getSize().x * FAKTOR_PART1, 0});
     ImGui::SetNextWindowSize({size_x, static_cast<float>(window->getSize().y)});
-    static const auto WINDOW_FLAGS = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar;
     ImGui::Begin("##win_text", &open, WINDOW_FLAGS);
 
     // Menübalken
@@ -119,37 +113,26 @@ void Mainmenu::show_texte() {
     const bool begin_menu_bar = ImGui::BeginMenuBar();
     ImGui::PopFont();
     if (begin_menu_bar) {
-        UI::push_icons();
-        if (ImGui::Button("\uF02E##Lesezeichen")) {
-            ImGui::SetWindowFocus(id_lesezeichen);
-            open_lesezeichen = true;
-        }
-        ImGui::PopFont();
-        UI::push_font();
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Lesezeichen");
-        ImGui::PopFont();
 
-        UI::push_icons();
-        if (ImGui::Button("\uF002##Suche")) {
-            ImGui::SetWindowFocus(id_suche);
-            open_suche = true;
-        }
-        ImGui::PopFont();
-        UI::push_font();
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Suche");
-        ImGui::PopFont();
+        auto add_ribbon = [](const char* btn_id, const char* window_id, bool& open, const char* tooltip) {
+            UI::push_icons();
+            if (ImGui::Button(btn_id)) {
+                ImGui::SetWindowFocus(window_id);
+                open = true;
+            }
+            ImGui::PopFont();
+            if (ImGui::IsItemHovered()) {
+                UI::push_font();
+                ImGui::SetTooltip("%s", tooltip);
+                ImGui::PopFont();
+            }
+        };
 
+        add_ribbon("\uF02E##R_Lesezeichen", id_lesezeichen, open_lesezeichen, "Lesezeichen");
+        add_ribbon("\uF002##R_Suche", id_suche, open_suche, "Suche");
+        add_ribbon("\uF013##R_Einstellungen", id_einstellungen, open_einstellungen, "Einstellungen");
 
-        UI::push_icons();
-        if (ImGui::Button("\uF013##Einstellungen")) {
-            ImGui::SetWindowFocus(id_einstellungen);
-            open_einstellungen = true;
-        }
-        ImGui::PopFont();
-        UI::push_font();
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Einstellungen");
-        ImGui::PopFont();
-
+        // Oben Rechts: (_) und (X)
         ImGui::SetCursorPosX(size_x - 40);
         if (ImGui::Button("_##minimieren")) {
             #ifdef __WIN32__
@@ -200,7 +183,7 @@ void Mainmenu::show_texte() {
         // Textdarstellungsfunktion
         auto verstext = [&](const Uebersetzung& u, unsigned kapitel, unsigned vers) {
             const std::string& text = u.get_text(buch->get_osis_id(kapitel, vers));
-            ImGui::TextColored(UI::FARBE1, "%u", vers);
+            ImGui::TextColored({farbe_versziffern}, "%u", vers);
             ImGui::TextWrapped("%s", text.c_str());
         };
 
@@ -499,6 +482,12 @@ void Mainmenu::show_einstellungen() {
 }
 
 void Mainmenu::farben_setzen() {
-    ImGui::GetStyle().Colors[ImGuiCol_Text] = farbe_text;
     ImGui::GetStyle().Colors[ImGuiCol_WindowBg] = farbe_hg;
+    ImGui::GetStyle().Colors[ImGuiCol_Text] = farbe_text;
+    farbe_versziffern = {
+            UI::FARBE1.r / 255.f + farbe_text.x * 0.5f,
+            UI::FARBE1.g / 255.f + farbe_text.y * 0.5f,
+            UI::FARBE1.b / 255.f + farbe_text.z * 0.5f,
+            1.f
+    };
 }
