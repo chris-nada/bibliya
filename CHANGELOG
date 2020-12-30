@@ -4,8 +4,8 @@ v
 + Neu: Schriftgröße einstellbar
 + Fix: Fehlende Texte aus <p> - Tags
 + Fix: Race Condition beim Import in <unordered_map>
++ Fix: Laden map.at gelöschte Übersetzung
 + TODO ComboBox auf Aktuelles Buch einrasten
-+ TODO Laden map.at gelöschte Übersetzung
 + TODO Übersetzungsmanager mit integrietem Download
 
 v2020_12_20
