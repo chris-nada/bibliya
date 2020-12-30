@@ -1,11 +1,12 @@
 v
++ Neu: Einstellungen
 + Neu: Verse beginnen auf gleicher Höhe
 + Neu: Schriftgröße einstellbar
++ Fix: Fehlende Texte aus <p> - Tags
++ TODO Fix Race Condition beim Import in <unordered_map>
 + TODO ComboBox auf Aktuelles Buch einrasten
 + TODO Laden map.at gelöschte Übersetzung
-+ TODO Einstellungen
 + TODO Übersetzungsmanager mit integrietem Download
-+ TODO Mat 3 15 fehlender Text Khomenko
 
 v2020_12_20
 + Neu: Fenster Minimieren

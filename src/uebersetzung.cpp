@@ -203,10 +203,12 @@ void Uebersetzung::import_osis(
                 letzter_txt_osis_id = osis_id;
             }
             // Weiterer Text
-            else if (!letzter_txt_osis_id.empty() && s.find('>') != std::string::npos &&
+            else if (!letzter_txt_osis_id.empty() && s.find('>') != std::string::npos && (
                     (s.find("<hi")  != std::string::npos ||
-                     s.find("</hi") != std::string::npos)) {
+                     s.find("</hi") != std::string::npos ||
+                     s.find("<p")   != std::string::npos))) {
                 std::string z = s.substr(s.find('>') + 1);
+                Sonstiges::tags_entfernen(z);
                 if (!z.empty()) u.texte[letzter_txt_osis_id].append(z);
             }
             // Titel
