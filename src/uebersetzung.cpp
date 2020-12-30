@@ -6,13 +6,6 @@
 #include <fstream>
 #include <mutex>
 
-#if __has_include(<execution>)
-    #include <execution>
-    #define PAR_UNSEQ std::execution::par_unseq,
-#else
-    #define PAR_UNSEQ
-#endif
-
 std::unordered_map<std::string, std::unordered_map<std::string, Uebersetzung>> Uebersetzung::uebersetzungen;
 
 Uebersetzung::Uebersetzung() {

@@ -3,6 +3,13 @@
 #include <vector>
 #include <string>
 
+#if __has_include(<execution>)
+    #include <execution>
+    #define PAR_UNSEQ /* std::execution::par_unseq, TODO */
+#else
+    #define PAR_UNSEQ
+#endif
+
 class Sonstiges final {
 
 public:
