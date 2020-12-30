@@ -1,10 +1,11 @@
 #include <fstream>
 #include <iostream>
-#include <mutex>
+#include <tbb/tbb.h>
+
 #include "buch.hpp"
 #include "sonstiges.hpp"
 
-std::unordered_map<std::string, Buch> Buch::buecher;
+std::map<std::string, Buch> Buch::buecher;
 
 const std::string& Buch::get_osis_id(unsigned kapitel, unsigned vers) const {
     try { return osis_ids.at(kapitel).at(vers); }
@@ -22,10 +23,10 @@ unsigned Buch::get_n_verse(unsigned kapitel) const {
 const std::tuple<unsigned, std::string>& Buch::get_order(const std::string& id) {
     typedef std::tuple<unsigned, std::string> tuple;
     static std::unordered_map<std::string, tuple> metadaten;
-    static std::mutex mutex;
+    static tbb::mutex mutex;
     static unsigned pos = 1;
     if (metadaten.empty()) {
-        std::lock_guard lock(mutex);
+        tbb::mutex::scoped_lock lock(mutex);
         if (metadaten.empty()) {
             if (std::ifstream in("data/buecher.ini"); in.good()) {
                 for (std::string s; std::getline(in, s);) {
@@ -40,7 +41,7 @@ const std::tuple<unsigned, std::string>& Buch::get_order(const std::string& id) 
         }
     }
     if (metadaten.count(id) == 0) {
-        std::lock_guard lock(mutex);
+        tbb::mutex::scoped_lock lock(mutex);
         if (metadaten.count(id) == 0) {
             metadaten[id] = std::make_tuple(pos, id);
             ++pos;
@@ -55,10 +56,10 @@ const Buch& Buch::get_buch(unsigned int pos) {
 }
 
 void Buch::buch_osis_check(const std::string& osis_id, unsigned int kapitel, unsigned int vers) {
-    static std::mutex buch_mutex;
     // Buch anlegen?
+    static tbb::mutex buch_mutex;
     if (Buch::buecher.count(osis_id) == 0) {
-        std::lock_guard lock(buch_mutex);
+        tbb::mutex::scoped_lock lock(buch_mutex);
         Buch::buecher[osis_id];
         Buch& b = Buch::buecher.at(osis_id);
         b.key = osis_id;
@@ -67,15 +68,15 @@ void Buch::buch_osis_check(const std::string& osis_id, unsigned int kapitel, uns
     }
     Buch& b = Buch::buecher.at(osis_id);
     if (b.n_kapitel < kapitel) {
-        std::lock_guard lock(buch_mutex);
+        tbb::mutex::scoped_lock lock(buch_mutex);
         b.n_kapitel = kapitel;
     }
     if (b.get_n_verse(kapitel) < vers) {
-        std::lock_guard lock(buch_mutex);
+        tbb::mutex::scoped_lock lock(buch_mutex);
         b.n_verse[kapitel] = vers;
     }
     if (b.get_osis_id(kapitel, vers).empty()) {
-        std::lock_guard lock(buch_mutex);
+        tbb::mutex::scoped_lock lock(buch_mutex);
         b.osis_ids[kapitel][vers] = osis_id + "." + std::to_string(kapitel) + "." + std::to_string(vers);
     }
 }

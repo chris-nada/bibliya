@@ -32,7 +32,7 @@ find_package(SFML 2 REQUIRED graphics window system) # audio
 #include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # Plattformabhängige Bibliotheken
-set(LIBS bibliotheken sfml-system sfml-window sfml-graphics)
+set(LIBS tbb bibliotheken sfml-system sfml-window sfml-graphics)
 
 ### Debian 10
 if (UNIX)

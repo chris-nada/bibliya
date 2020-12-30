@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <mutex>
+#include <tbb/tbb.h>
 
 std::unordered_map<std::string, std::unordered_map<std::string, Uebersetzung>> Uebersetzung::uebersetzungen;
 
@@ -25,10 +26,12 @@ const std::unordered_map<std::string, std::unordered_map<std::string, Uebersetzu
 }
 
 std::vector<Lesezeichen> Uebersetzung::suche(const std::string& suchbegriff, bool nur_nt) {
-    static std::mutex mutex;
+    static tbb::mutex mutex;
     std::vector<Lesezeichen> ergebnisse;
-    std::for_each(PAR_UNSEQ Buch::get_buecher().begin(), Buch::get_buecher().end(), [&](const auto& buch_paar) {
-        const Buch& buch = buch_paar.second;
+    tbb::parallel_for(static_cast<std::size_t>(0), Buch::get_buecher().size(), [&](std::size_t i) {
+        auto it = Buch::get_buecher().begin();
+        std::advance(it, i);
+        const Buch& buch = it->second;
         if (!nur_nt ||
             (buch.get_pos() >= Buch::get_buch("Matt").get_pos() &&
              buch.get_pos() <= Buch::get_buch("Rev").get_pos()))
@@ -43,7 +46,7 @@ std::vector<Lesezeichen> Uebersetzung::suche(const std::string& suchbegriff, boo
 
                             // Begriff gefunden?
                             if (text.find(suchbegriff) != std::string::npos) {
-                                std::lock_guard lock(mutex);
+                                tbb::mutex::scoped_lock lock(mutex);
                                 ergebnisse.emplace_back("", buch.get_key(), kapitel, vers);
                                 goto naechster_vers;
                             }
@@ -77,10 +80,10 @@ void Uebersetzung::init(std::function<void(void)>& display_progress) {
         }
 
         // Dateien einlesen
-        static std::mutex u_mutex; // Hinzufügen neuer Übersetzungen
-        static std::mutex anim_mutex;
-        std::for_each(PAR_UNSEQ dateien.begin(), dateien.end(), [&](const auto& paar) {
-        //for (const auto& paar : dateien) {
+        static tbb::mutex u_mutex; // Hinzufügen neuer Übersetzungen
+        static tbb::mutex anim_mutex;
+        tbb::parallel_for(static_cast<std::size_t>(0), dateien.size(), [&](std::size_t i) {
+            const auto& paar = dateien[i];
             const std::string& sprache = paar.first;
             const std::filesystem::directory_entry& datei = paar.second;
             if (datei.path().string().find(".xml") != std::string::npos) {
@@ -114,7 +117,7 @@ void Uebersetzung::import_osis(
 
             // Ladeanimation
             if (thread_local unsigned counter = 0; counter++ % 5000 == 0) {
-                std::lock_guard lock(anim_mutex);
+                tbb::mutex::scoped_lock lock(anim_mutex);
                 display_progress();
             }
 
@@ -216,7 +219,7 @@ void Uebersetzung::import_osis(
         // Speichern
         const std::string key = datei.path().filename().string();
         std::cout << "\tImport von " << key << " abgeschlossen" << std::endl;
-        std::lock_guard lock(uebersetzungs_mutex);
+        tbb::mutex::scoped_lock lock(uebersetzungs_mutex);
         uebersetzungen[sprache][key] = u;
     }
     else std::cerr << "[Warnung] Uebersetzung konnte nicht geoeffnet werden: " << datei.path().string() << std::endl;
@@ -253,7 +256,7 @@ void Uebersetzung::import_csv(const std::string& sprache, const std::filesystem:
         for (; std::getline(in, zeile); ) {
             // Ladeanimation
             if (thread_local unsigned counter = 0; counter++ % 5000 == 0) {
-                std::lock_guard lock(anim_mutex);
+                tbb::mutex::scoped_lock lock(anim_mutex);
                 display_progress();
             }
             if (zeile.size() < 8) continue;
@@ -282,7 +285,7 @@ void Uebersetzung::import_csv(const std::string& sprache, const std::filesystem:
         // Speichern
         const std::string key = datei.path().filename().string();
         std::cout << "\tImport von " << key << " abgeschlossen" << std::endl;
-        std::lock_guard lock(uebersetzungs_mutex);
+        tbb::mutex::scoped_lock lock(uebersetzungs_mutex);
         uebersetzungen[sprache][key] = u;
     }
 }

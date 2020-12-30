@@ -6,11 +6,11 @@
 #include <vector>
 #include <functional>
 #include <filesystem>
-#include <mutex>
+#include <tbb/mutex.h>
 
 class Uebersetzung final {
 
-    static inline std::mutex uebersetzungs_mutex, anim_mutex;
+    static inline tbb::mutex uebersetzungs_mutex, anim_mutex;
 
 public:
 

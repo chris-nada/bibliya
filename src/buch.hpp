@@ -1,7 +1,8 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
+#include <map>
+#include <tbb/tbb.h>
 
 class Buch final {
 
@@ -10,7 +11,7 @@ class Buch final {
 public:
 
     /// [ID] [Buch]
-    static const std::unordered_map<std::string, Buch>& get_buecher() { return buecher; }
+    static const auto& get_buecher() { return buecher; }
 
     /// Liefert Buch nach Position.
     static const Buch& get_buch(unsigned pos);
@@ -44,7 +45,7 @@ private:
     static void buch_osis_check(const std::string& osis_id, unsigned kapitel, unsigned vers);
 
     /// Key: Kapitel [key], Value: Kapitel
-    static std::unordered_map<std::string, Buch> buecher;
+    static std::map<std::string, Buch> buecher;
 
     /// Name Plaintext
     std::string name;
@@ -56,12 +57,12 @@ private:
     unsigned pos;
 
     /// [Kapitel][Vers] -> OSIS-ID
-    std::unordered_map<unsigned, std::unordered_map<unsigned, std::string>> osis_ids;
+    std::map<unsigned, std::map<unsigned, std::string>> osis_ids;
 
     /// Anzahl Kapitel
     unsigned n_kapitel = 0;
 
     /// Anzahl Verse für Kapitel
-    std::unordered_map<unsigned, unsigned> n_verse;
+    std::map<unsigned, unsigned> n_verse;
 
 };
