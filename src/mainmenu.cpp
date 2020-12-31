@@ -151,9 +151,8 @@ void Mainmenu::show_texte() {
     ImGui::SetCursorPosY(PADDING * 2);
 
     // Spalten
-    const unsigned anzahl = keys.size();
-    if (anzahl > 0) {
-        ImGui::Columns(anzahl, "##texte", true);
+    if (!keys.empty()) {
+        ImGui::Columns(keys.size(), "##texte", true);
         std::vector<const Uebersetzung*> ubersetzungen;
 
         // Übersetzungen in Vektor schreiben
@@ -162,7 +161,8 @@ void Mainmenu::show_texte() {
             const Uebersetzung* u = &Uebersetzung::get_uebersetzungen().at(std::get<0>(key)).at(std::get<1>(key));
 
             // Entfernen (X)
-            if (std::string btn_label = "X##del" + std::get<0>(key) + std::get<1>(key); ImGui::Button(btn_label.c_str())) {
+            const std::string id(std::get<0>(key) + std::get<1>(key));
+            if (const std::string btn_label = "X##del" + id; ImGui::Button(btn_label.c_str())) {
                 keys.erase(keys.begin() + i);
                 goto ausgang;
             }
@@ -170,14 +170,28 @@ void Mainmenu::show_texte() {
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Übersetzung aus Ansicht entfernen");
             ImGui::PopFont();
 
+            // Sortieren <
+            if (i > 0) {
+                ImGui::SameLine();
+                if (const std::string btn_label("<##<" + id); ImGui::Button(btn_label.c_str())) {
+                    std::iter_swap(keys.begin() + i, keys.begin() + i - 1);
+                }
+            }
+
+            // Sortieren >
+            if (i < keys.size()-1) {
+                ImGui::SameLine();
+                if (const std::string btn_label(">##>" + id); ImGui::Button(btn_label.c_str())) {
+                    std::iter_swap(keys.begin() + i, keys.begin() + i + 1);
+                }
+            }
+
             // Überschriften
             ImGui::SameLine();
             ImGui::TextUnformatted(u->get_name().c_str());
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", u->get_name().c_str());
             ImGui::NewLine();
             ImGui::NextColumn();
-
-            // Sortieren
-            // TODO
 
             ubersetzungen.push_back(u);
         }
