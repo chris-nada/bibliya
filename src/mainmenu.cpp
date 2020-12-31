@@ -10,13 +10,15 @@
 #include <cereal/types/tuple.hpp>
 #include <filesystem>
 #include <fstream>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 
 #ifdef __WIN32__
     #include <windows.h>
     #include <winuser.h>
 #endif
 
-Mainmenu::Mainmenu() {
+Mainmenu::Mainmenu() : window(nullptr) {
     if (std::ifstream in("data/save.dat", std::ios::binary); in.good()) {
         try {
             cereal::PortableBinaryInputArchive boa(in);
@@ -69,6 +71,7 @@ void Mainmenu::show() {
         show_texte();
         show_lesezeichen();
         show_suche();
+        show_karte();
         show_einstellungen();
 
         // SFML Renders
@@ -130,6 +133,7 @@ void Mainmenu::show_texte() {
 
         add_ribbon("\uF02E##R_Lesezeichen", id_lesezeichen, open_lesezeichen, "Lesezeichen");
         add_ribbon("\uF002##R_Suche", id_suche, open_suche, "Suche");
+        add_ribbon("\uF279##R_Karte", id_karte, open_karte, "Karte");
         add_ribbon("\uF013##R_Einstellungen", id_einstellungen, open_einstellungen, "Einstellungen");
 
         // Oben Rechts: (_) und (X)
@@ -516,9 +520,25 @@ void Mainmenu::show_einstellungen() {
     }
 }
 
+void Mainmenu::show_karte() {
+
+    if (open_karte) {
+        UI::push_font();
+        if (ImGui::Begin(id_karte, &open_karte, ImGuiWindowFlags_HorizontalScrollbar)) {
+            static sf::Texture karte;
+            if (karte.getSize().x == 0) karte.loadFromFile("data/gfx/palestina.jpg");
+            ImGui::Image(karte);
+        }
+        ImGui::End();
+        ImGui::PopFont();
+    }
+}
+
 void Mainmenu::farben_setzen() {
     ImGui::GetStyle().Colors[ImGuiCol_WindowBg] = farbe_hg;
     ImGui::GetStyle().Colors[ImGuiCol_Text] = farbe_text;
+    ImGui::GetStyle().Colors[ImGuiCol_ScrollbarGrab] = farbe_text;
+    ImGui::GetStyle().Colors[ImGuiCol_ScrollbarBg] = farbe_hg;
     farbe_versziffern = {
             UI::FARBE1.r / 255.f + farbe_text.x * 0.5f,
             UI::FARBE1.g / 255.f + farbe_text.y * 0.5f,

@@ -25,6 +25,9 @@ class Mainmenu final {
     /// ID Einstellungenfenster
     static inline const char* id_einstellungen = "Einstellungen##win_einstellungen";
 
+    /// ID Karte
+    static inline const char* id_karte = "Einstellungen##win_einstellungen";
+
 public:
 
     /// Ctor.
@@ -68,6 +71,8 @@ private: // UI
 
     bool open_einstellungen = false;
 
+    bool open_karte = false;
+
 private: // Arbeitsdaten
 
     /// Anzuzeigende Übersetzungen [Sprache] -> Set von [ID].
@@ -97,4 +102,5 @@ private: // Arbeitsdaten
     /// Farbe der Versziffern.
     ImVec4 farbe_versziffern = ImColor(UI::FARBE1);
 
+    void show_karte();
 };
