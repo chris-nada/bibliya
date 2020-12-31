@@ -162,10 +162,13 @@ void Mainmenu::show_texte() {
 
             // Entfernen (X)
             const std::string id(std::get<0>(key) + std::get<1>(key));
-            if (const std::string btn_label = "X##del" + id; ImGui::Button(btn_label.c_str())) {
+            UI::push_icons();
+            if (const std::string btn_label = "\uF00D##del" + id; ImGui::Button(btn_label.c_str())) {
                 keys.erase(keys.begin() + i);
+                ImGui::PopFont();
                 goto ausgang;
             }
+            ImGui::PopFont();
             UI::push_font();
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Übersetzung aus Ansicht entfernen");
             ImGui::PopFont();
@@ -173,17 +176,21 @@ void Mainmenu::show_texte() {
             // Sortieren <
             if (i > 0) {
                 ImGui::SameLine();
-                if (const std::string btn_label("<##<" + id); ImGui::Button(btn_label.c_str())) {
+                UI::push_icons();
+                if (const std::string btn_label("\uF053##<" + id); ImGui::Button(btn_label.c_str())) {
                     std::iter_swap(keys.begin() + i, keys.begin() + i - 1);
                 }
+                ImGui::PopFont();
             }
 
             // Sortieren >
             if (i < keys.size()-1) {
                 ImGui::SameLine();
-                if (const std::string btn_label(">##>" + id); ImGui::Button(btn_label.c_str())) {
+                UI::push_icons();
+                if (const std::string btn_label("\uF054##>" + id); ImGui::Button(btn_label.c_str())) {
                     std::iter_swap(keys.begin() + i, keys.begin() + i + 1);
                 }
+                ImGui::PopFont();
             }
 
             // Überschriften
