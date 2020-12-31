@@ -3,10 +3,8 @@
 #include "ui.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <unordered_map>
-#include <deque>
 #include <imgui.h>
-#include <unordered_set>
+#include <tuple>
 
 class Buch;
 
@@ -38,7 +36,7 @@ public:
     /// Destruktor.
     ~Mainmenu();
 
-
+    /// Startet die Fensteranzeige (Schleife).
     void show();
 
 private: // UI
@@ -72,24 +70,31 @@ private: // UI
 
 private: // Arbeitsdaten
 
-    /// Anzuzeigende Übersetzungen [Sprache] -> Set von [ID]
-    std::unordered_map<std::string, std::unordered_set<std::string>> keys;
+    /// Anzuzeigende Übersetzungen [Sprache] -> Set von [ID].
+    std::vector<std::tuple<std::string, std::string>> keys;
 
+    /// Anzuzeigendes Buch.
     const Buch* buch = nullptr;
 
+    /// Anzuzeigendes Kapitel.
     unsigned auswahl_kapitel = 1;
 
+    /// (Erster) anzuzeigender Vers.
     unsigned auswahl_vers = 1;
 
-    /// 0 = Einzeln, 1 = Fünf Verse, 2 = Kapitel
+    /// 0 = Einzeln, 1 = Fünf Verse, 2 = Kapitel.
     int auswahl_modus = 0;
 
+    /// Größe der Schrift (1-6).
     unsigned text_groesse = 3;
 
+    /// Textfarbe.
     ImVec4 farbe_text = ImGui::GetStyleColorVec4(ImGuiCol_Text);
 
+    /// Fensterhintergrundfarbe.
     ImVec4 farbe_hg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
 
+    /// Farbe der Versziffern.
     ImVec4 farbe_versziffern = ImColor(UI::FARBE1);
 
 };

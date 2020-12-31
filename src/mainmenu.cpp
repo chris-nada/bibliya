@@ -5,9 +5,9 @@
 #include <imgui-SFML.h>
 #include <SFML/Window/Event.hpp>
 #include <cereal/archives/portable_binary.hpp>
-#include <cereal/types/unordered_set.hpp>
-#include <cereal/types/unordered_map.hpp>
+#include <cereal/types/vector.hpp>
 #include <cereal/types/string.hpp>
+#include <cereal/types/tuple.hpp>
 #include <filesystem>
 #include <fstream>
 
@@ -150,33 +150,36 @@ void Mainmenu::show_texte() {
     UI::push_font(text_groesse);
     ImGui::SetCursorPosY(PADDING * 2);
 
-    // Columns
-    unsigned anzahl = 0;
-    for (const auto& lang_keys : keys) anzahl += lang_keys.second.size();
+    // Spalten
+    const unsigned anzahl = keys.size();
     if (anzahl > 0) {
         ImGui::Columns(anzahl, "##texte", true);
         std::vector<const Uebersetzung*> ubersetzungen;
 
-        // Überschriften
-        for (auto& lang_keys : keys) { // [lang_key] [set<string>]
-            for (const auto& key : lang_keys.second) { // string (Übersetungs-Key)
-                // Entfernen (X)
-                if (std::string btn_label = "X##del" + key; ImGui::Button(btn_label.c_str())) {
-                    lang_keys.second.erase(key);
-                    goto ausgang;
-                }
-                UI::push_font();
-                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Übersetzung aus Ansicht entfernen");
-                ImGui::PopFont();
+        // Übersetzungen in Vektor schreiben
+        for (unsigned i = 0; i < keys.size(); ++i) { // [lang_key] [übersetzungs-key]
+            const auto& key = keys[i];
+            const Uebersetzung* u = &Uebersetzung::get_uebersetzungen().at(std::get<0>(key)).at(std::get<1>(key));
 
-                // Überschrift = Name d. Übersetzung
-                const Uebersetzung& u = Uebersetzung::get_uebersetzungen().at(lang_keys.first).at(key);
-                ubersetzungen.push_back(&u);
-                ImGui::SameLine();
-                ImGui::TextUnformatted(u.get_name().c_str());
-                ImGui::NewLine();
-                ImGui::NextColumn();
+            // Entfernen (X)
+            if (std::string btn_label = "X##del" + std::get<0>(key) + std::get<1>(key); ImGui::Button(btn_label.c_str())) {
+                keys.erase(keys.begin() + i);
+                goto ausgang;
             }
+            UI::push_font();
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Übersetzung aus Ansicht entfernen");
+            ImGui::PopFont();
+
+            // Überschriften
+            ImGui::SameLine();
+            ImGui::TextUnformatted(u->get_name().c_str());
+            ImGui::NewLine();
+            ImGui::NextColumn();
+
+            // Sortieren
+            // TODO
+
+            ubersetzungen.push_back(u);
         }
         ausgang:
 
@@ -249,7 +252,7 @@ void Mainmenu::ui_uebersetzungswahl() {
             std::string select_id = temp_it->second.get_name() + "##u_sel_" + sprachen[auswahl_sprache] + temp_it->first;
             if (ImGui::Selectable(select_id.c_str(), is_selected)) auswahl_uebersetzung = i;
             const std::string& info = temp_it->second.get_info();
-            //if (is_selected) ImGui::SetItemDefaultFocus();
+            if (is_selected) ImGui::SetItemDefaultFocus();
             if (!info.empty() && ImGui::IsItemHovered()) {
                 ImGui::BeginTooltip();
                 ImGui::Dummy({600.f, 0});
@@ -262,7 +265,10 @@ void Mainmenu::ui_uebersetzungswahl() {
     // Hinzufügen
     ImGui::SameLine();
     UI::push_icons();
-    if (ImGui::Button("\uF067##uebersetzung_plus")) keys[sprachen.at(auswahl_sprache)].insert(uebersetzung_it->first);
+    if (ImGui::Button("\uF067##uebersetzung_plus")) {
+        const auto paar = std::make_tuple(sprachen.at(auswahl_sprache), uebersetzung_it->first);
+        if (std::find(keys.begin(), keys.end(), paar) == keys.end()) keys.push_back(paar);
+    }
     ImGui::PopFont();
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("Übersetzung hinzufügen");
 }
@@ -280,7 +286,7 @@ void Mainmenu::ui_verswahl() {
     }
 
     // Buch ComboBox Begin
-    const bool begin_buch_combo = ImGui::BeginCombo("##BuchCombo", buch->get_name().c_str());
+    const bool begin_buch_combo = ImGui::BeginCombo("##BuchCombo", buch->get_name().c_str(), ImGuiComboFlags_HeightLarge);
     if (begin_buch_combo) {
         static const ImColor FARBE = {UI::FARBE1};
         static const auto einschub = [](const char* text) {
@@ -294,7 +300,7 @@ void Mainmenu::ui_verswahl() {
         einschub( "- Altes Testament -");
         for (const auto& buch_key : buecher) {
             const Buch& temp_buch = buecher_paare.at(buch_key);
-            const bool is_selected = buch == &temp_buch;
+            const bool is_selected = (buch == &temp_buch);
 
             // Einschübe
             if (temp_buch.get_name() == buch_key && !start_unbekannte) {
@@ -414,12 +420,19 @@ void Mainmenu::show_suche() {
             // Neue Suche
             static char notiz[0xFF] = "";
             static bool nur_nt = true;
-            if (ImGui::InputTextWithHint("##input_suche", "Suchbegriff", notiz, IM_ARRAYSIZE(notiz), ImGuiInputTextFlags_EnterReturnsTrue)) {
+            static std::string suchbegriff;
+            auto suchen = [&]() {
                 ergebnisse = Uebersetzung::suche(notiz, nur_nt);
+                suchbegriff = std::string(notiz);
+            };
+            if (ImGui::InputTextWithHint("##input_suche", "Suchbegriff",
+                                         notiz, IM_ARRAYSIZE(notiz),
+                                         ImGuiInputTextFlags_EnterReturnsTrue)) {
+                suchen();
             }
             ImGui::SameLine();
             UI::push_icons();
-            if (ImGui::Button("\uF002##btn_suche_start")) ergebnisse = Uebersetzung::suche(notiz, nur_nt);
+            if (ImGui::Button("\uF002##btn_suche_start")) suchen();
             ImGui::PopFont();
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Suche starten");
             UI::tooltip("Die Textsuche beachtet Groß-/Kleinschreibung.");
@@ -430,7 +443,8 @@ void Mainmenu::show_suche() {
             ImGui::NewLine();
 
             // Suchergebnisse auflisten
-            for (unsigned i = 0; i < ergebnisse.size(); ++i) {
+            if (ergebnisse.empty() && !suchbegriff.empty()) ImGui::Text("Keine Ergebnisse für %s", suchbegriff.c_str());
+            else for (unsigned i = 0; i < ergebnisse.size(); ++i) {
                 const Lesezeichen& l = ergebnisse[i];
                 if (Buch::get_buecher().count(l.buch) == 0) continue;
                 const Buch& l_buch = Buch::get_buecher().at(l.buch);
