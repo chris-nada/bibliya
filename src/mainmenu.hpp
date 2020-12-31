@@ -26,7 +26,7 @@ class Mainmenu final {
     static inline const char* id_einstellungen = "Einstellungen##win_einstellungen";
 
     /// ID Karte
-    static inline const char* id_karte = "Einstellungen##win_einstellungen";
+    static inline const char* id_karte = "Karte##win_karte";
 
 public:
 
