@@ -1,12 +1,13 @@
-v
++ TODO ComboBox auf Aktuelles Buch einrasten
++ TODO Idee: Übersetzungsmanager mit integrietem Download
+
+v2021_01_13
 + Neu: Einstellungen
 + Neu: Verse beginnen auf gleicher Höhe
 + Neu: Schriftgröße einstellbar
 + Fix: Fehlende Texte aus <p> - Tags
 + Fix: Race Condition beim Import in <unordered_map>
 + Fix: Laden map.at gelöschte Übersetzung
-+ TODO ComboBox auf Aktuelles Buch einrasten
-+ TODO Übersetzungsmanager mit integrietem Download
 
 v2020_12_20
 + Neu: Fenster Minimieren
