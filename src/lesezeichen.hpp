@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 
+/// Repräsentiert ein einzelnes Lesezeichen, d.h. eine Referenz zu einer Textstelle.
 class Lesezeichen final {
 
 public:
@@ -17,6 +18,7 @@ public:
 
     static void remove(std::size_t pos);
 
+    /// Optionale Notiz des Nutzers.
     std::string notiz;
 
     std::string buch;

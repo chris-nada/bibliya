@@ -6,8 +6,18 @@
 #include <imgui.h>
 #include <tuple>
 
+/// Vordeklaration.
 class Buch;
 
+/**
+ * Hauptansicht.
+ *
+ * + Menü links = `show_config()` und `ui_verswahl()` und `ui_uebersetzungswahl()`
+ * + Menübalken oben = `show_lesezeichen()` und `show_suche()` und `show_einstellungen()` und `show_karte()`
+ * + Lesetexte = `show_texte()`
+ *
+ * @note Mainmenu::show() startet eine Schleife bis das Fenster geschlossen wird.
+ */
 class Mainmenu final {
 
     /// Horizontale Aufteilung
@@ -53,6 +63,8 @@ private: // UI
     void show_suche();
 
     void show_einstellungen();
+
+    void show_karte();
 
     void ui_verswahl();
 
@@ -102,5 +114,4 @@ private: // Arbeitsdaten
     /// Farbe der Versziffern.
     ImVec4 farbe_versziffern = ImColor(UI::FARBE1);
 
-    void show_karte();
 };

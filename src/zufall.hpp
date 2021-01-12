@@ -4,9 +4,13 @@
 #include <chrono>
 #include <unordered_map>
 
-/// Methoden zum Liefern von Zufallszahlen.
 namespace Zufall {
 
+    /**
+     * Thread-sichere Methode zum Liefern von Zufallszahlen beliebigen Typs.
+     * @example Folgendes Beispiel liefert die Zahlen von 1 bis 6 wie auf einem Spielwürfel:
+     *          `get<unsigned>(1, 6)`
+     */
     template<typename T>
     T get(T a, T b) {
         thread_local std::random_device rd;

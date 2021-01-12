@@ -8,6 +8,9 @@
 #include <filesystem>
 #include <tbb/mutex.h>
 
+/**
+ * Klasse enthält den kompletten Text *einer* Übersetzung (in der Variable `texte`).
+ */
 class Uebersetzung final {
 
     static inline tbb::mutex uebersetzungs_mutex, anim_mutex;

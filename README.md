@@ -7,7 +7,7 @@
 + Es können mehrere Bibelübersetzungen zur Textanalyse nebeneinander verglichen werden.
 + Die Übersetzungen werden aus OSIS-Dateien eingelesen, **einige freie Übersetzungen\* sind bereits enthalten**. 
 + Weitere Übersetzungen sind hier: https://github.com/gratis-bible/bible oder hier: https://ebible.org/find/ frei erhältlich.
-    + Die heruntergeladene (OSIS-) XML-Datei muss in den Ordner `./data/de/` gelegt werden. (Für andere Sprachen ggf. anderen Ordner wählen oder Ordner erstellen).
+    + Die heruntergeladene (OSIS-) XML-Datei muss in den Ordner `bibliya/data/de/` gelegt werden. (Für andere Sprachen ggf. anderen Ordner wählen oder Ordner erstellen).
 + Die Nutzeroberfläche ist derzeit fest auf Deutsch eingestellt.
 + Wünsche zu neuen Funktionen, Fragen oder Fehler sehr gern an mich oder hier ein _Issue_ eröffnen.
 

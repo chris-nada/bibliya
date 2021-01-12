@@ -7,8 +7,6 @@ class Sonstiges final {
 
 public:
 
-    enum class Format { NONE, GREY, RED, YELLOW, GREEN };
-
     static std::vector<std::string> tokenize(const std::string& text, const char token, unsigned max_tokens = 0) {
         std::vector<std::string> teile;
         teile.reserve(4);

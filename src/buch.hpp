@@ -4,6 +4,7 @@
 #include <map>
 #include <tbb/tbb.h>
 
+/// Repräsentiert ein einzelnes Buch, d.h. z.B. 'Lukas 1' oder 'Johannes 2'.
 class Buch final {
 
     friend class Uebersetzung;

@@ -3,6 +3,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <functional>
 
+/// Ladeanimation.
 class Laden final {
 
 public:

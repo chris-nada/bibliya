@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics/Color.hpp>
 
+/// Hilfsmethoden für die Nutzeroberfläche.
 class UI final {
 
 public:
@@ -19,9 +20,5 @@ public:
 
     /// Zeigt ein (?) mit gegebenem `text` als Maus-over an.
     static void tooltip(const char* text);
-
-private:
-
-
 
 };
