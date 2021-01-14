@@ -311,7 +311,9 @@ void Mainmenu::ui_verswahl() {
     }
 
     // Buch ComboBox Begin
-    const bool begin_buch_combo = ImGui::BeginCombo("##BuchCombo", buch->get_name().c_str(), ImGuiComboFlags_HeightLarge);
+    const bool begin_buch_combo = ImGui::BeginCombo("##BuchCombo",
+                                                    buch->get_name().c_str(),
+                                                    ImGuiComboFlags_HeightLarge);
     if (begin_buch_combo) {
         static const ImColor FARBE = {UI::FARBE1};
         static const auto einschub = [](const char* text) {
@@ -436,22 +438,26 @@ void Mainmenu::show_suche() {
     if (open_suche) {
         UI::push_font();
         if (ImGui::Begin(id_suche, &open_suche)) {
-
             static std::vector<Lesezeichen> ergebnisse;
+            static auto scroll_alt = std::make_pair(false, ImGui::GetScrollY());
+            if (scroll_alt.first) {
+                scroll_alt.first = false;
+                ImGui::SetScrollY(scroll_alt.second);
+            }
 
             // X Größe sicherstellen
             if (ImGui::GetWindowSize().x < 580.f) ImGui::SetWindowSize({580.f, ImGui::GetWindowSize().y});
 
             // Neue Suche
-            static char notiz[0xFF] = "";
+            static char suchbegriff_c_str[0xFF] = "";
             static bool nur_nt = true;
             static std::string suchbegriff;
-            auto suchen = [&]() {
-                ergebnisse = Uebersetzung::suche(notiz, nur_nt);
-                suchbegriff = std::string(notiz);
+            const auto suchen = [&]() {
+                ergebnisse = Uebersetzung::suche(suchbegriff_c_str, nur_nt);
+                suchbegriff = std::string(suchbegriff_c_str);
             };
             if (ImGui::InputTextWithHint("##input_suche", "Suchbegriff",
-                                         notiz, IM_ARRAYSIZE(notiz),
+                                         suchbegriff_c_str, IM_ARRAYSIZE(suchbegriff_c_str),
                                          ImGuiInputTextFlags_EnterReturnsTrue)) {
                 suchen();
             }
@@ -477,6 +483,7 @@ void Mainmenu::show_suche() {
                 // Auswählen
                 UI::push_icons();
                 if (std::string id("\uF061##suche_goto_" + std::to_string(i)); ImGui::Button(id.c_str())) {
+                    scroll_alt = std::make_pair(true, ImGui::GetScrollY()); // Scrollpos merken, Workaround
                     buch = &l_buch;
                     auswahl_kapitel = l.kapitel;
                     auswahl_vers = l.vers;

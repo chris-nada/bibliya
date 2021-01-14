@@ -1,10 +1,10 @@
 v
-+ Fix: Quelltext kommentiert
 + TODO ComboBox auf Aktuelles Buch einrasten
 + TODO Idee: Übersetzungsmanager mit integrietem Download
-+ TODO Suche springen, wenn klicken auf Anzeigen
 + TODO Lesezeichen Reihenfolge umsortieren
 + TODO Lesezeichen Notiz grau oder so
++ Fix: Suchen-Scroller sprang bei Klicken 'Anzeigen'
++ Fix: Quelltext kommentiert
 
 v2021_01_13
 + Neu: Einstellungen
