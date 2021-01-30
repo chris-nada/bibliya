@@ -3,6 +3,8 @@ v
 + TODO Idee: Übersetzungsmanager mit integrietem Download
 + TODO Lesezeichen Reihenfolge umsortieren
 + TODO Lesezeichen Notiz grau oder so
++ TODO Hin-und-Herspringen zwischen 2 (oder mehr) Stellen
++ TODO Übersetzung auch nach Herunterscrollen weiter zeigen
 + Fix: Suchen-Scroller sprang bei Klicken 'Anzeigen'
 + Fix: Quelltext kommentiert
 

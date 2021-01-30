@@ -74,7 +74,7 @@ private: // UI
 
     sf::RenderWindow* window;
 
-    /// Loop.
+    /// Loop?
     bool open = true;
 
     bool open_lesezeichen = false;
