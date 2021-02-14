@@ -18,7 +18,7 @@
     #include <winuser.h>
 #endif
 
-Mainmenu::Mainmenu() : window(nullptr) {
+Mainmenu::Mainmenu() {
     if (std::ifstream in("data/save.dat", std::ios::binary); in.good()) {
         try {
             cereal::PortableBinaryInputArchive boa(in);
@@ -60,7 +60,15 @@ void Mainmenu::show() {
             ImGui::SFML::ProcessEvent(event);
             if (event.type == sf::Event::Closed) window->close();
             if (event.type == sf::Event::KeyReleased) {
-                if (event.key.code == sf::Keyboard::Escape) window->close();
+                switch (event.key.code) {
+                    using TASTE = sf::Keyboard;
+                    case TASTE::Escape: window->close(); break;
+                    case TASTE::Up:     auswahl_vers--; break;
+                    case TASTE::Down:   auswahl_vers++; break;
+                    case TASTE::Left:   auswahl_kapitel--; break;
+                    case TASTE::Right:  auswahl_kapitel++; break;
+                    default: break;
+                }
             }
         }
         ImGui::SFML::Update(*window, deltaClock.restart());
@@ -315,10 +323,10 @@ void Mainmenu::ui_verswahl() {
                                                     buch->get_name().c_str(),
                                                     ImGuiComboFlags_HeightLarge);
     if (begin_buch_combo) {
-        static const ImColor FARBE = {UI::FARBE1};
+        if (ImGui::IsItemClicked()) std::cout << "Combo open!" << std::endl;
         static const auto einschub = [](const char* text) {
             ImGui::Separator();
-            ImGui::TextColored(FARBE, "%s", text);
+            ImGui::TextColored({UI::FARBE1}, "%s", text);
             ImGui::Separator();
         };
         bool start_unbekannte = false;
@@ -327,7 +335,6 @@ void Mainmenu::ui_verswahl() {
         einschub( "- Altes Testament -");
         for (const auto& buch_key : buecher) {
             const Buch& temp_buch = buecher_paare.at(buch_key);
-            const bool is_selected = (buch == &temp_buch);
 
             // Einschübe
             if (temp_buch.get_name() == buch_key && !start_unbekannte) {
@@ -337,8 +344,12 @@ void Mainmenu::ui_verswahl() {
             else if (buch_key == "Matt") einschub("- Neues Testament -");
 
             // Auswahl
-            if (ImGui::Selectable(temp_buch.get_name().c_str())) buch = &temp_buch;
-            if (is_selected) ImGui::SetItemDefaultFocus();
+            if (buch == &temp_buch) {
+                ImGui::PushStyleColor(ImGuiCol_FrameBg, {0xFF, 0x00, 0xFF, 0xFF});
+                if (ImGui::Selectable(temp_buch.get_name().c_str())) buch = &temp_buch;
+                ImGui::PopStyleColor();
+            }
+            else if (ImGui::Selectable(temp_buch.get_name().c_str())) buch = &temp_buch;
         }
         ImGui::EndCombo();
     }
@@ -356,7 +367,9 @@ void Mainmenu::ui_verswahl() {
     ImGui::NewLine();
     static const unsigned STEP = 1;
     ImGui::TextUnformatted("Kapitel");
-    ImGui::InputScalar("##input_Kapitel", ImGuiDataType_U32, &auswahl_kapitel, &STEP, nullptr, "%u");
+    if (ImGui::InputScalar("##input_Kapitel", ImGuiDataType_U32, &auswahl_kapitel, &STEP, nullptr, "%u")) {
+        auswahl_vers = 1; // Neues Kapitel -> zu Vers 1
+    }
     auswahl_kapitel = std::clamp(auswahl_kapitel, 1u, buch->get_n_kapitel());
 
     // Versauswahl

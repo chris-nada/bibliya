@@ -72,7 +72,7 @@ private: // UI
 
     void farben_setzen();
 
-    sf::RenderWindow* window;
+    sf::RenderWindow* window = nullptr;
 
     /// Loop?
     bool open = true;
