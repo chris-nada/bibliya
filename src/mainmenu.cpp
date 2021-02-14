@@ -67,6 +67,7 @@ void Mainmenu::show() {
                     case TASTE::Down:   auswahl_vers++; break;
                     case TASTE::Left:   auswahl_kapitel--; break;
                     case TASTE::Right:  auswahl_kapitel++; break;
+                    case TASTE::Home:   auswahl_vers = 1; break;
                     default: break;
                 }
             }
