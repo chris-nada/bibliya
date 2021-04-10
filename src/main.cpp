@@ -12,7 +12,7 @@
 #endif
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Bibliya", sf::Style::None);
+    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Bibliya", UI::get_fenstertyp());
     window.setFramerateLimit(60);
     ImGui::SFML::Init(window, false);
     ImPlot::CreateContext();

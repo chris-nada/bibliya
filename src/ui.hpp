@@ -1,12 +1,14 @@
 #pragma once
 
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Window/WindowStyle.hpp>
 
 /// Hilfsmethoden für die Nutzeroberfläche.
 class UI final {
 
 public:
 
+    /// Standardfarbe 1.
     static const inline sf::Color FARBE1 = {0x80, 0x60, 0x60, 0xFF};
 
     /// Einmalig aufrufen um Schema einzustellen und Schrift(en) zu laden.
@@ -20,5 +22,8 @@ public:
 
     /// Zeigt ein (?) mit gegebenem `text` als Maus-over an.
     static void tooltip(const char* text);
+
+    /// Welche Fensterart genutzt werden soll.
+    static int get_fenstertyp() { return sf::Style::Default; };
 
 };

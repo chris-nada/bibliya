@@ -146,15 +146,15 @@ void Mainmenu::show_texte() {
         add_ribbon("\uF013##R_Einstellungen", id_einstellungen, open_einstellungen, "Einstellungen");
 
         // Oben Rechts: (_) und (X)
-        ImGui::SetCursorPosX(size_x - 40);
-        if (ImGui::Button("_##minimieren")) {
-            #ifdef __WIN32__
-            sf::WindowHandle handle = window->getSystemHandle();
-            ShowWindow(handle, SW_MINIMIZE);
-            #endif
-        }
-        if (ImGui::Button("X##schliessen")) {
-            window->close();
+        if (UI::get_fenstertyp() != sf::Style::Default) {
+            ImGui::SetCursorPosX(size_x - 40);
+            if (ImGui::Button("_##minimieren")) {
+                #ifdef __WIN32__
+                sf::WindowHandle handle = window->getSystemHandle();
+                ShowWindow(handle, SW_MINIMIZE);
+                #endif
+            }
+            if (ImGui::Button("X##schliessen")) window->close();
         }
         ImGui::EndMenuBar();
     }
