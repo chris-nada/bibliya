@@ -12,8 +12,11 @@
 #endif
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Bibliya", UI::get_fenstertyp());
-    window.setFramerateLimit(60);
+    sf::ContextSettings context_settings;
+    context_settings.antialiasingLevel = 0; // TODO Rückmeldung Laptop von S
+
+    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Bibliya", UI::get_fenstertyp(), context_settings);
+    window.setFramerateLimit(30); // <- Rückmeldung
     ImGui::SFML::Init(window, false);
     ImPlot::CreateContext();
     UI::setup_style();

@@ -1,5 +1,4 @@
 v
-+ TODO CPU Auslastung prüfen, ggf. optimieren
 + TODO ComboBox auf Aktuelles Buch einrasten
 + TODO Idee: Übersetzungsmanager mit integrietem Download
 + TODO Lesezeichen Reihenfolge umsortieren
@@ -7,6 +6,7 @@ v
 + TODO Hin-und-Herspringen zwischen 2 (oder mehr) Stellen
 + TODO Übersetzung auch nach Herunterscrollen weiter zeigen
 + Neu: Pfeiltasten zur Navigation Vers/Kapitel, Pos1 = Vers1.
++ Fix: CPU Auslastung prüfen, ggf. optimieren
 + Fix: Vollbild -> Fenster (um Systemleiste nicht zu verstecken)
 + Fix: Suchen-Scroller sprang bei Klicken 'Anzeigen'
 + Fix: Quelltext kommentiert
