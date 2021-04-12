@@ -11,7 +11,7 @@ public:
     Tab() = default;
 
     /// (Anzuzeigendes Buch (initialisiert).
-    const Buch* buch = nullptr;
+    const mutable Buch* buch = nullptr;
 
     /// Anzuzeigendes Buch.
     unsigned buch_pos = 1;
@@ -26,9 +26,14 @@ public:
     int auswahl_modus = 2;
 
     /// Getter: Buch.
-    const Buch* get_buch() {
+    const Buch* get_buch() const {
         if (buch == nullptr) buch = &Buch::get_buch(1);
         return buch;
+    }
+
+    /// Liefert einen Namen für die aktuelle Textstelle: Mat 1:2
+    std::string get_name() const {
+        return get_buch()->get_key() + " " + std::to_string(auswahl_kapitel) + ':' + std::to_string(auswahl_vers);
     }
 
     /// Serialisierungsmethode für Cereal.

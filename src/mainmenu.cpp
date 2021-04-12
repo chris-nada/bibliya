@@ -163,7 +163,7 @@ void Mainmenu::show_texte() {
     ImGui::BeginTabBar("##text_tabs");
     for (unsigned tab_index = 0; tab_index < tabs.size(); ++tab_index) {
 
-        const std::string tab_id("Tab " + std::to_string(tab_index + 1));
+        const std::string tab_id("Tab " + std::to_string(tab_index+1));
         const bool begin_tab = ImGui::BeginTabItem(tab_id.c_str());
         const bool close_tab = ImGui::IsItemClicked(ImGuiMouseButton_Middle) && tab_index > 0;
 
@@ -174,10 +174,15 @@ void Mainmenu::show_texte() {
         if (close_tab) {
             tabs.erase(tabs.begin() + tab_index);
             if (begin_tab) ImGui::EndTabItem();
+            continue;
         }
         if (!begin_tab) continue;
 
         tab = tab_index; // Aktiver Tab
+
+        // Text als Child, damit Tabs nicht weggescrollt werden
+        const std::string child_id(tab_id + "child");
+        ImGui::BeginChild(child_id.c_str());
 
         // Spalten
         if (!keys.empty()) {
@@ -262,6 +267,7 @@ void Mainmenu::show_texte() {
             }
             ImGui::Columns();
         }
+        ImGui::EndChild();
         ImGui::EndTabItem();
     }
     // Fenster Ende
