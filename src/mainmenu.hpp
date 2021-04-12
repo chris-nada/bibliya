@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ui.hpp"
+#include "tab.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <imgui.h>
@@ -72,6 +73,8 @@ private: // UI
 
     void farben_setzen();
 
+    Tab& get_tab() { return tabs[tab]; }
+
     sf::RenderWindow* window = nullptr;
 
     /// Loop?
@@ -90,17 +93,13 @@ private: // Arbeitsdaten
     /// Anzuzeigende Übersetzungen [Sprache] -> Set von [ID].
     std::vector<std::tuple<std::string, std::string>> keys;
 
-    /// Anzuzeigendes Buch.
-    const Buch* buch = nullptr;
+    /// Anzuzeigender Tab.
+    unsigned tab = 0;
 
-    /// Anzuzeigendes Kapitel.
-    unsigned auswahl_kapitel = 1;
+    /// Tabs
+    std::vector<Tab> tabs;
 
-    /// (Erster) anzuzeigender Vers.
-    unsigned auswahl_vers = 1;
-
-    /// 0 = Einzeln, 1 = Fünf Verse, 2 = Kapitel.
-    int auswahl_modus = 0;
+private: // Stil
 
     /// Größe der Schrift (1-6).
     unsigned text_groesse = 3;

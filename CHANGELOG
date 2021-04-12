@@ -3,10 +3,11 @@ v
 + TODO Idee: Übersetzungsmanager mit integrietem Download
 + TODO Lesezeichen Reihenfolge umsortieren
 + TODO Lesezeichen Notiz grau oder so
-+ TODO Hin-und-Herspringen zwischen 2 (oder mehr) Stellen
 + TODO Übersetzung auch nach Herunterscrollen weiter zeigen
-+ Neu: Pfeiltasten zur Navigation Vers/Kapitel, Pos1 = Vers1.
-+ Fix: CPU Auslastung prüfen, ggf. optimieren
++ Neu: Tabs
++ Neu: Pfeiltasten zur Navigation Vers/Kapitel, Pos1 = Vers1
++ Etc: Standardmodus ist jetzt Kapitel (statt 1 Vers / 5 Verse)
++ Fix: CPU Auslastung verringert
 + Fix: Vollbild -> Fenster (um Systemleiste nicht zu verstecken)
 + Fix: Suchen-Scroller sprang bei Klicken 'Anzeigen'
 + Fix: Quelltext kommentiert

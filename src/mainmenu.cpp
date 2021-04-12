@@ -22,22 +22,17 @@ Mainmenu::Mainmenu() {
     if (std::ifstream in("data/save.dat", std::ios::binary); in.good()) {
         try {
             cereal::PortableBinaryInputArchive boa(in);
-            unsigned buch_pos, farbe_hg_temp, farbe_text_temp;
-            boa(keys, buch_pos, auswahl_kapitel, auswahl_vers, auswahl_modus, text_groesse,
-                farbe_hg_temp, farbe_text_temp);
+            unsigned farbe_hg_temp, farbe_text_temp;
+            boa(keys, tabs, text_groesse,
+                farbe_hg_temp, farbe_text_temp
+            );
             farbe_hg   = ImGui::ColorConvertU32ToFloat4(farbe_hg_temp);
             farbe_text = ImGui::ColorConvertU32ToFloat4(farbe_text_temp);
-            for (const auto& buch_paar : Buch::get_buecher()) {
-                if (buch_paar.second.get_pos() == buch_pos) {
-                    buch = &buch_paar.second;
-                    break;
-                }
-            }
         } catch (const std::exception& e) {
             std::cerr << "Arbeitsstand konnte nicht importiert werden. Veraltete Version?" << std::endl;
         }
     }
-    if (buch == nullptr) buch = &Buch::get_buch(1);
+    if (tabs.empty()) tabs.emplace_back();
 }
 
 Mainmenu::Mainmenu(sf::RenderWindow& window) : Mainmenu() {
@@ -47,8 +42,9 @@ Mainmenu::Mainmenu(sf::RenderWindow& window) : Mainmenu() {
 Mainmenu::~Mainmenu() {
     if (std::ofstream out("data/save.dat", std::ios::binary); out.good()) {
         cereal::PortableBinaryOutputArchive boa(out);
-        boa(keys, buch->get_pos(), auswahl_kapitel, auswahl_vers, auswahl_modus, text_groesse,
-            ImGui::ColorConvertFloat4ToU32(farbe_hg), ImGui::ColorConvertFloat4ToU32(farbe_text));
+        boa(keys, tabs, text_groesse,
+            ImGui::ColorConvertFloat4ToU32(farbe_hg), ImGui::ColorConvertFloat4ToU32(farbe_text)
+        );
     }
 }
 
@@ -63,11 +59,11 @@ void Mainmenu::show() {
                 switch (event.key.code) {
                     using TASTE = sf::Keyboard;
                     case TASTE::Escape: window->close(); break;
-                    case TASTE::Up:     auswahl_vers--; break;
-                    case TASTE::Down:   auswahl_vers++; break;
-                    case TASTE::Left:   auswahl_kapitel--; break;
-                    case TASTE::Right:  auswahl_kapitel++; break;
-                    case TASTE::Home:   auswahl_vers = 1; break;
+                    case TASTE::Up:     get_tab().auswahl_vers--; break;
+                    case TASTE::Down:   get_tab().auswahl_vers++; break;
+                    case TASTE::Left:   get_tab().auswahl_kapitel--; break;
+                    case TASTE::Right:  get_tab().auswahl_kapitel++; break;
+                    case TASTE::Home:   get_tab().auswahl_vers = 1; break;
                     default: break;
                 }
             }
@@ -163,88 +159,114 @@ void Mainmenu::show_texte() {
     UI::push_font(text_groesse);
     ImGui::SetCursorPosY(PADDING * 2);
 
-    // Spalten
-    if (!keys.empty()) {
-        ImGui::Columns(keys.size(), "##texte", true);
-        std::vector<const Uebersetzung*> ubersetzungen;
+    // Tabs: Start
+    ImGui::BeginTabBar("##text_tabs");
+    for (unsigned tab_index = 0; tab_index < tabs.size(); ++tab_index) {
 
-        // Übersetzungen in Vektor schreiben
-        for (unsigned i = 0; i < keys.size(); ++i) { // [lang_key] [übersetzungs-key]
-            const auto& key = keys[i];
-            const Uebersetzung* u = &Uebersetzung::get_uebersetzungen().at(std::get<0>(key)).at(std::get<1>(key));
+        const std::string tab_id("Tab " + std::to_string(tab_index + 1));
+        const bool begin_tab = ImGui::BeginTabItem(tab_id.c_str());
+        const bool close_tab = ImGui::IsItemClicked(ImGuiMouseButton_Middle) && tab_index > 0;
 
-            // Entfernen (X)
-            const std::string id(std::get<0>(key) + std::get<1>(key));
-            UI::push_icons();
-            if (const std::string btn_label = "\uF00D##del" + id; ImGui::Button(btn_label.c_str())) {
-                keys.erase(keys.begin() + i);
-                ImGui::PopFont();
-                goto ausgang;
-            }
-            ImGui::PopFont();
-            UI::push_font();
-            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Übersetzung aus Ansicht entfernen");
-            ImGui::PopFont();
+        // Tab +
+        if (tab_index == tabs.size()-1) if (ImGui::SameLine(); ImGui::Button("+##neues_tab")) tabs.emplace_back(get_tab());
 
-            // Sortieren <
-            if (i > 0) {
-                ImGui::SameLine();
-                UI::push_icons();
-                if (const std::string btn_label("\uF053##<" + id); ImGui::Button(btn_label.c_str())) {
-                    std::iter_swap(keys.begin() + i, keys.begin() + i - 1);
-                }
-                ImGui::PopFont();
-            }
-
-            // Sortieren >
-            if (i < keys.size()-1) {
-                ImGui::SameLine();
-                UI::push_icons();
-                if (const std::string btn_label("\uF054##>" + id); ImGui::Button(btn_label.c_str())) {
-                    std::iter_swap(keys.begin() + i, keys.begin() + i + 1);
-                }
-                ImGui::PopFont();
-            }
-
-            // Überschriften
-            ImGui::SameLine();
-            ImGui::TextUnformatted(u->get_name().c_str());
-            if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", u->get_name().c_str());
-            ImGui::NewLine();
-            ImGui::NextColumn();
-
-            ubersetzungen.push_back(u);
+        // Tab schließen?
+        if (close_tab) {
+            tabs.erase(tabs.begin() + tab_index);
+            if (begin_tab) ImGui::EndTabItem();
         }
-        ausgang:
+        if (!begin_tab) continue;
 
-        // Textdarstellungsfunktion
-        auto verstext = [&](const Uebersetzung& u, unsigned kapitel, unsigned vers) {
-            const std::string& text = u.get_text(buch->get_osis_id(kapitel, vers));
-            ImGui::TextColored({farbe_versziffern}, "%u", vers);
-            ImGui::TextWrapped("%s", text.c_str());
-        };
+        tab = tab_index; // Aktiver Tab
 
-        // Verse auflisten
-        unsigned vers_start = auswahl_vers;
-        unsigned vers_ende = auswahl_vers;
-        if (auswahl_modus == 1) vers_ende = auswahl_vers + 4;
-        else if (auswahl_modus == 2) vers_ende = buch->get_n_verse(auswahl_kapitel);
+        // Spalten
+        if (!keys.empty()) {
+            ImGui::Columns(keys.size(), "##texte", true);
+            std::vector<const Uebersetzung*> ubersetzungen;
 
-        float max_y = ImGui::GetCursorPosY();
-        float max_y_new = ImGui::GetCursorPosY();
-        for (unsigned v = vers_start; v <= vers_ende && v <= buch->get_n_verse(auswahl_kapitel); ++v) {
-            for (unsigned i = 0; i < ubersetzungen.size(); ++i) {
-                if (i == 0) max_y = max_y_new;
-                ImGui::SetCursorPosY(max_y);
-                const Uebersetzung* u = ubersetzungen[i];
-                verstext(*u, auswahl_kapitel, v);
-                max_y_new = std::max(max_y_new, ImGui::GetCursorPosY());
+            // Übersetzungen in Vektor schreiben
+            for (unsigned i = 0; i < keys.size(); ++i) { // [lang_key] [übersetzungs-key]
+                const auto& key = keys[i];
+                const Uebersetzung* u = &Uebersetzung::get_uebersetzungen().at(std::get<0>(key)).at(std::get<1>(key));
+
+                // Entfernen (X)
+                const std::string id(std::get<0>(key) + std::get<1>(key));
+                UI::push_icons();
+                if (const std::string btn_label = "\uF00D##del" + id; ImGui::Button(btn_label.c_str())) {
+                    keys.erase(keys.begin() + i);
+                    ImGui::PopFont();
+                    goto ausgang;
+                }
+                ImGui::PopFont();
+                UI::push_font();
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Übersetzung aus Ansicht entfernen");
+                ImGui::PopFont();
+
+                // Sortieren <
+                if (i > 0) {
+                    ImGui::SameLine();
+                    UI::push_icons();
+                    if (const std::string btn_label("\uF053##<" + id); ImGui::Button(btn_label.c_str())) {
+                        std::iter_swap(keys.begin() + i, keys.begin() + i - 1);
+                    }
+                    ImGui::PopFont();
+                }
+
+                // Sortieren >
+                if (i < keys.size() - 1) {
+                    ImGui::SameLine();
+                    UI::push_icons();
+                    if (const std::string btn_label("\uF054##>" + id); ImGui::Button(btn_label.c_str())) {
+                        std::iter_swap(keys.begin() + i, keys.begin() + i + 1);
+                    }
+                    ImGui::PopFont();
+                }
+
+                // Überschriften
+                ImGui::SameLine();
+                ImGui::TextUnformatted(u->get_name().c_str());
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", u->get_name().c_str());
+                ImGui::NewLine();
                 ImGui::NextColumn();
+
+                ubersetzungen.push_back(u);
             }
+            ausgang:
+
+            // Textdarstellungsfunktion
+            auto verstext = [&](const Uebersetzung& u, unsigned kapitel, unsigned vers) {
+                const std::string& text = u.get_text(get_tab().get_buch()->get_osis_id(kapitel, vers));
+                ImGui::TextColored({farbe_versziffern}, "%u", vers);
+                ImGui::TextWrapped("%s", text.c_str());
+            };
+
+            // Verse auflisten
+            unsigned vers_start = get_tab().auswahl_vers;
+            unsigned vers_ende = get_tab().auswahl_vers;
+            if (get_tab().auswahl_modus == 1) vers_ende = get_tab().auswahl_vers + 4;
+            else if (get_tab().auswahl_modus == 2)
+                vers_ende = get_tab().get_buch()->get_n_verse(get_tab().auswahl_kapitel);
+
+            float max_y = ImGui::GetCursorPosY();
+            float max_y_new = ImGui::GetCursorPosY();
+            for (unsigned v = vers_start;
+                 v <= vers_ende && v <= get_tab().get_buch()->get_n_verse(get_tab().auswahl_kapitel); ++v) {
+                for (unsigned i = 0; i < ubersetzungen.size(); ++i) {
+                    if (i == 0) max_y = max_y_new;
+                    ImGui::SetCursorPosY(max_y);
+                    const Uebersetzung* u = ubersetzungen[i];
+                    verstext(*u, get_tab().auswahl_kapitel, v);
+                    max_y_new = std::max(max_y_new, ImGui::GetCursorPosY());
+                    ImGui::NextColumn();
+                }
+            }
+            ImGui::Columns();
         }
-        ImGui::Columns();
+        ImGui::EndTabItem();
     }
+    // Fenster Ende
     ImGui::PopFont();
+    ImGui::EndTabBar();
     ImGui::End();
 }
 
@@ -321,7 +343,7 @@ void Mainmenu::ui_verswahl() {
 
     // Buch ComboBox Begin
     const bool begin_buch_combo = ImGui::BeginCombo("##BuchCombo",
-                                                    buch->get_name().c_str(),
+                                                    get_tab().get_buch()->get_name().c_str(),
                                                     ImGuiComboFlags_HeightLarge);
     if (begin_buch_combo) {
         if (ImGui::IsItemClicked()) std::cout << "Combo open!" << std::endl;
@@ -345,46 +367,46 @@ void Mainmenu::ui_verswahl() {
             else if (buch_key == "Matt") einschub("- Neues Testament -");
 
             // Auswahl
-            if (buch == &temp_buch) {
+            if (get_tab().get_buch() == &temp_buch) {
                 ImGui::PushStyleColor(ImGuiCol_FrameBg, {0xFF, 0x00, 0xFF, 0xFF});
-                if (ImGui::Selectable(temp_buch.get_name().c_str())) buch = &temp_buch;
+                if (ImGui::Selectable(temp_buch.get_name().c_str())) get_tab().buch = &temp_buch;
                 ImGui::PopStyleColor();
             }
-            else if (ImGui::Selectable(temp_buch.get_name().c_str())) buch = &temp_buch;
+            else if (ImGui::Selectable(temp_buch.get_name().c_str())) get_tab().buch = &temp_buch;
         }
         ImGui::EndCombo();
     }
 
     // Buch -/+
-    const unsigned buch_pos_alt = buch->get_pos();
+    const unsigned buch_pos_alt = get_tab().get_buch()->get_pos();
     unsigned buch_pos_neu = buch_pos_alt;
     ImGui::SameLine(); if (ImGui::Button("-##buch_minus")) --buch_pos_neu;
     ImGui::SameLine(); if (ImGui::Button("+##buch_plus")) ++buch_pos_neu;
     if (buch_pos_neu != buch_pos_alt && buch_pos_neu >= 1 && buch_pos_neu <= buecher.size()) {
-        buch = &Buch::get_buch(buch_pos_neu);
+        get_tab().buch = &Buch::get_buch(buch_pos_neu);
     }
 
     // Kapitelauswahl
     ImGui::NewLine();
     static const unsigned STEP = 1;
     ImGui::TextUnformatted("Kapitel");
-    if (ImGui::InputScalar("##input_Kapitel", ImGuiDataType_U32, &auswahl_kapitel, &STEP, nullptr, "%u")) {
-        auswahl_vers = 1; // Neues Kapitel -> zu Vers 1
+    if (ImGui::InputScalar("##input_Kapitel", ImGuiDataType_U32, &get_tab().auswahl_kapitel, &STEP, nullptr, "%u")) {
+        get_tab().auswahl_vers = 1; // Neues Kapitel -> zu Vers 1
     }
-    auswahl_kapitel = std::clamp(auswahl_kapitel, 1u, buch->get_n_kapitel());
+    get_tab().auswahl_kapitel = std::clamp(get_tab().auswahl_kapitel, 1u, get_tab().get_buch()->get_n_kapitel());
 
     // Versauswahl
     ImGui::NewLine();
     ImGui::TextUnformatted("Vers");
-    ImGui::InputScalar("##input_Vers", ImGuiDataType_U32, &auswahl_vers, &STEP, nullptr, "%u");
-    auswahl_vers = std::clamp(auswahl_vers, 1u, buch->get_n_verse(auswahl_kapitel));
+    ImGui::InputScalar("##input_Vers", ImGuiDataType_U32, &get_tab().auswahl_vers, &STEP, nullptr, "%u");
+    get_tab().auswahl_vers = std::clamp(get_tab().auswahl_vers, 1u, get_tab().get_buch()->get_n_verse(get_tab().auswahl_kapitel));
 
     // Modus
     ImGui::NewLine();
     ImGui::TextUnformatted("Darstellung");
-    ImGui::RadioButton("1 Vers",  &auswahl_modus, 0);
-    ImGui::RadioButton("5 Verse", &auswahl_modus, 1);
-    ImGui::RadioButton("Kapitel", &auswahl_modus, 2);
+    ImGui::RadioButton("1 Vers",  &get_tab().auswahl_modus, 0);
+    ImGui::RadioButton("5 Verse", &get_tab().auswahl_modus, 1);
+    ImGui::RadioButton("Kapitel", &get_tab().auswahl_modus, 2);
 }
 
 void Mainmenu::show_lesezeichen() {
@@ -397,13 +419,13 @@ void Mainmenu::show_lesezeichen() {
 
             // Neues Lesezeichen
             static char notiz[0xFF] = "";
-            ImGui::Text("%s %u:%u", buch->get_name().c_str(), auswahl_kapitel, auswahl_vers);
+            ImGui::Text("%s %u:%u", get_tab().get_buch()->get_name().c_str(), get_tab().auswahl_kapitel, get_tab().auswahl_vers);
             ImGui::SameLine();
             ImGui::InputTextWithHint("##input_notiz", "Notiz", notiz, IM_ARRAYSIZE(notiz));
             ImGui::SameLine();
             UI::push_icons();
             if (ImGui::Button("\uF067")) {
-                Lesezeichen l(notiz, buch->get_key(), auswahl_kapitel, auswahl_vers);
+                Lesezeichen l(notiz, get_tab().get_buch()->get_key(), get_tab().auswahl_kapitel, get_tab().auswahl_vers);
                 Lesezeichen::add(l);
             }
             ImGui::PopFont();
@@ -430,9 +452,9 @@ void Mainmenu::show_lesezeichen() {
                 // Auswählen
                 ImGui::SameLine();
                 if (std::string id("\uF061##l_goto_" + std::to_string(i)); ImGui::Button(id.c_str())) {
-                    buch = &l_buch;
-                    auswahl_kapitel = l.kapitel;
-                    auswahl_vers = l.vers;
+                    get_tab().buch = &l_buch;
+                    get_tab().auswahl_kapitel = l.kapitel;
+                    get_tab().auswahl_vers = l.vers;
                     ImGui::PopFont();
                     break;
                 }
@@ -498,9 +520,9 @@ void Mainmenu::show_suche() {
                 UI::push_icons();
                 if (std::string id("\uF061##suche_goto_" + std::to_string(i)); ImGui::Button(id.c_str())) {
                     scroll_alt = std::make_pair(true, ImGui::GetScrollY()); // Scrollpos merken, Workaround
-                    buch = &l_buch;
-                    auswahl_kapitel = l.kapitel;
-                    auswahl_vers = l.vers;
+                    get_tab().buch = &l_buch;
+                    get_tab().auswahl_kapitel = l.kapitel;
+                    get_tab().auswahl_vers = l.vers;
                     ImGui::PopFont();
                     break;
                 }
