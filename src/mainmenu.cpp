@@ -1,6 +1,7 @@
 #include "mainmenu.hpp"
 #include "uebersetzung.hpp"
 #include "lesezeichen.hpp"
+#include "suche.hpp"
 
 #include <imgui-SFML.h>
 #include <SFML/Window/Event.hpp>
@@ -417,171 +418,47 @@ void Mainmenu::ui_verswahl() {
 }
 
 void Mainmenu::show_lesezeichen() {
-    if (open_lesezeichen) {
-        UI::push_font();
-        if (ImGui::Begin(id_lesezeichen, &open_lesezeichen)) {
-
-            // X Größe sicherstellen
-            if (ImGui::GetWindowSize().x < 580.f) ImGui::SetWindowSize({580.f, ImGui::GetWindowSize().y});
-
-            // Neues Lesezeichen
-            static char notiz[0xFF] = "";
-            ImGui::Text("%s %u:%u", get_tab().get_buch()->get_name().c_str(), get_tab().auswahl_kapitel, get_tab().auswahl_vers);
-            ImGui::SameLine();
-            ImGui::InputTextWithHint("##input_notiz", "Notiz", notiz, IM_ARRAYSIZE(notiz));
-            ImGui::SameLine();
-            UI::push_icons();
-            if (ImGui::Button("\uF067")) {
-                Lesezeichen l(notiz, get_tab().get_buch()->get_key(), get_tab().auswahl_kapitel, get_tab().auswahl_vers);
-                Lesezeichen::add(l);
-            }
-            ImGui::PopFont();
-            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Lesezeichen hinzufügen");
-            ImGui::NewLine();
-
-            // Alle Lesezeichen auflisten
-            for (unsigned i = 0; i < Lesezeichen::alle().size(); ++i) {
-                const Lesezeichen& l = Lesezeichen::alle()[i];
-                if (Buch::get_buecher().count(l.buch) == 0) continue;
-                const Buch& l_buch = Buch::get_buecher().at(l.buch);
-
-                // Löschen
-                UI::push_icons();
-                if (std::string id("\uF014##l_del_" + std::to_string(i)); ImGui::Button(id.c_str())) {
-                    Lesezeichen::remove(i);
-                    ImGui::PopFont();
-                    break;
-                }
-                ImGui::PopFont();
-                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Lesezeichen Entfernen");
-                UI::push_icons();
-
-                // Auswählen
-                ImGui::SameLine();
-                if (std::string id("\uF061##l_goto_" + std::to_string(i)); ImGui::Button(id.c_str())) {
-                    get_tab().buch = &l_buch;
-                    get_tab().auswahl_kapitel = l.kapitel;
-                    get_tab().auswahl_vers = l.vers;
-                    ImGui::PopFont();
-                    break;
-                }
-                ImGui::PopFont();
-                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Anzeigen");
-
-                ImGui::SameLine();
-                ImGui::Text("%s %u:%u %s", l_buch.get_name().c_str(), l.kapitel, l.vers, l.notiz.c_str());
-            }
-        }
-        ImGui::End();
-        ImGui::PopFont();
-    }
+    if (open_lesezeichen) Lesezeichen::show(id_lesezeichen, &open_lesezeichen, get_tab());
 }
 
 void Mainmenu::show_suche() {
-    if (open_suche) {
-        UI::push_font();
-        if (ImGui::Begin(id_suche, &open_suche)) {
-            static std::vector<Lesezeichen> ergebnisse;
-            static auto scroll_alt = std::make_pair(false, ImGui::GetScrollY());
-            if (scroll_alt.first) {
-                scroll_alt.first = false;
-                ImGui::SetScrollY(scroll_alt.second);
-            }
-
-            // X Größe sicherstellen
-            if (ImGui::GetWindowSize().x < 580.f) ImGui::SetWindowSize({580.f, ImGui::GetWindowSize().y});
-
-            // Neue Suche
-            static char suchbegriff_c_str[0xFF] = "";
-            static bool nur_nt = true;
-            static std::string suchbegriff;
-            const auto suchen = [&]() {
-                ergebnisse = Uebersetzung::suche(suchbegriff_c_str, nur_nt);
-                suchbegriff = std::string(suchbegriff_c_str);
-            };
-            if (ImGui::InputTextWithHint("##input_suche", "Suchbegriff",
-                                         suchbegriff_c_str, IM_ARRAYSIZE(suchbegriff_c_str),
-                                         ImGuiInputTextFlags_EnterReturnsTrue)) {
-                suchen();
-            }
-            ImGui::SameLine();
-            UI::push_icons();
-            if (ImGui::Button("\uF002##btn_suche_start")) suchen();
-            ImGui::PopFont();
-            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Suche starten");
-            UI::tooltip("Die Textsuche beachtet Groß-/Kleinschreibung.");
-            ImGui::SameLine();
-            ImGui::Checkbox("Nur NT", &nur_nt);
-            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Nur Neues Testament durchsuchen");
-
-            ImGui::NewLine();
-
-            // Suchergebnisse auflisten
-            if (ergebnisse.empty() && !suchbegriff.empty()) ImGui::Text("Keine Ergebnisse für %s", suchbegriff.c_str());
-            else for (unsigned i = 0; i < ergebnisse.size(); ++i) {
-                const Lesezeichen& l = ergebnisse[i];
-                if (Buch::get_buecher().count(l.buch) == 0) continue;
-                const Buch& l_buch = Buch::get_buecher().at(l.buch);
-
-                // Auswählen
-                UI::push_icons();
-                if (std::string id("\uF061##suche_goto_" + std::to_string(i)); ImGui::Button(id.c_str())) {
-                    scroll_alt = std::make_pair(true, ImGui::GetScrollY()); // Scrollpos merken, Workaround
-                    get_tab().buch = &l_buch;
-                    get_tab().auswahl_kapitel = l.kapitel;
-                    get_tab().auswahl_vers = l.vers;
-                    ImGui::PopFont();
-                    break;
-                }
-                ImGui::PopFont();
-                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Anzeigen");
-
-                ImGui::SameLine();
-                ImGui::Text("%s %u:%u", l_buch.get_name().c_str(), l.kapitel, l.vers);
-            }
-        }
-        ImGui::End();
-        ImGui::PopFont();
-    }
+    if (open_suche) Suche::show(id_suche, &open_suche, get_tab());
 }
 
 void Mainmenu::show_einstellungen() {
-    if (open_einstellungen) {
-        UI::push_font();
-        if (ImGui::Begin(id_einstellungen, &open_einstellungen)) {
-            // Schriftgröße
-            static const unsigned STEP = 1;
-            static const unsigned WIDTH = 160;
-            ImGui::SetNextItemWidth(WIDTH);
-            ImGui::InputScalar("Textgröße##input_schriftgroesse", ImGuiDataType_U32, &text_groesse, &STEP, nullptr, "%u");
-            text_groesse = std::clamp(text_groesse, 1u, 6u);
+    if (!open_einstellungen) return;
+    UI::push_font();
+    if (ImGui::Begin(id_einstellungen, &open_einstellungen)) {
+        // Schriftgröße
+        static const unsigned STEP = 1;
+        static const unsigned WIDTH = 160;
+        ImGui::SetNextItemWidth(WIDTH);
+        ImGui::InputScalar("Textgröße##input_schriftgroesse", ImGuiDataType_U32, &text_groesse, &STEP, nullptr, "%u");
+        text_groesse = std::clamp(text_groesse, 1u, 6u);
 
-            // Farben
-            const auto FLAGS = ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoAlpha;
-            ImGui::NewLine();
-            ImGui::SetNextItemWidth(WIDTH);
-            ImGui::ColorPicker3("Textfarbe", reinterpret_cast<float*>(&farbe_text), FLAGS);
-            ImGui::NewLine();
-            ImGui::SetNextItemWidth(WIDTH);
-            ImGui::ColorPicker3("Hintergrundfarbe", reinterpret_cast<float*>(&farbe_hg), FLAGS);
-        }
-        ImGui::End();
-        ImGui::PopFont();
+        // Farben
+        const auto FLAGS = ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoAlpha;
+        ImGui::NewLine();
+        ImGui::SetNextItemWidth(WIDTH);
+        ImGui::ColorPicker3("Textfarbe", reinterpret_cast<float*>(&farbe_text), FLAGS);
+        ImGui::NewLine();
+        ImGui::SetNextItemWidth(WIDTH);
+        ImGui::ColorPicker3("Hintergrundfarbe", reinterpret_cast<float*>(&farbe_hg), FLAGS);
     }
+    ImGui::End();
+    ImGui::PopFont();
 }
 
 void Mainmenu::show_karte() {
-
-    if (open_karte) {
-        UI::push_font();
-        if (ImGui::Begin(id_karte, &open_karte, ImGuiWindowFlags_HorizontalScrollbar)) {
-            static sf::Texture karte;
-            if (karte.getSize().x == 0) karte.loadFromFile("data/gfx/palestina.jpg");
-            ImGui::Image(karte);
-        }
-        ImGui::End();
-        ImGui::PopFont();
+    if (!open_karte) return;
+    UI::push_font();
+    if (ImGui::Begin(id_karte, &open_karte, ImGuiWindowFlags_HorizontalScrollbar)) {
+        static sf::Texture karte;
+        if (karte.getSize().x == 0) karte.loadFromFile("data/gfx/palestina.jpg");
+        ImGui::Image(karte);
     }
+    ImGui::End();
+    ImGui::PopFont();
 }
 
 void Mainmenu::farben_setzen() {

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <vector>
-#include <string>
+#include "tab.hpp"
 
 /// Repräsentiert ein einzelnes Lesezeichen, d.h. eine Referenz zu einer Textstelle.
 class Lesezeichen final {
@@ -11,6 +10,8 @@ public:
     Lesezeichen() = default;
 
     Lesezeichen(const std::string& notiz, const std::string& buch, unsigned int kapitel, unsigned int vers);
+
+    static void show(const char* id_lesezeichen, bool* open_lesezeichen, Tab& aktueller_tab);
 
     static std::vector<Lesezeichen>& alle();
 

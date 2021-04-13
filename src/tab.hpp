@@ -34,7 +34,7 @@ public:
     /// Liefert einen Namen für die aktuelle Textstelle: Mat 1:2
     std::string get_name() const {
         std::string name(get_buch()->get_key() + " " + std::to_string(auswahl_kapitel));
-        if (auswahl_modus != 2) name.append(':' + std::to_string(auswahl_vers));
+        if (auswahl_modus != 2 || auswahl_vers > 1) name.append(':' + std::to_string(auswahl_vers));
         return name;
     }
 

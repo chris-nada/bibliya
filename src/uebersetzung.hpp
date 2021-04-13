@@ -13,7 +13,8 @@
  */
 class Uebersetzung final {
 
-    static inline tbb::mutex uebersetzungs_mutex, anim_mutex;
+    static inline tbb::mutex uebersetzungs_mutex;
+    static inline tbb::mutex anim_mutex;
 
 public:
 

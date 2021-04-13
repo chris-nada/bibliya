@@ -1,10 +1,13 @@
 #include "lesezeichen.hpp"
 #include "buch.hpp"
+#include "ui.hpp"
+#include "tab.hpp"
 
 #include <fstream>
 #include <cereal/archives/portable_binary.hpp>
 #include <cereal/types/string.hpp>
 #include <cereal/types/vector.hpp>
+#include <imgui.h>
 
 std::vector<Lesezeichen> Lesezeichen::lesezeichen;
 
@@ -52,4 +55,63 @@ bool Lesezeichen::operator<(const Lesezeichen& rhs) const {
     if (vers < rhs.vers) return true;
     if (rhs.vers < vers) return false;
     return notiz < rhs.notiz;
+}
+
+void Lesezeichen::show(const char* id_lesezeichen, bool* open_lesezeichen, Tab& aktueller_tab) {
+    UI::push_font();
+    if (ImGui::Begin(id_lesezeichen, open_lesezeichen)) {
+
+        // X Größe sicherstellen
+        if (ImGui::GetWindowSize().x < 580.f) ImGui::SetWindowSize({580.f, ImGui::GetWindowSize().y});
+
+        // Neues Lesezeichen
+        static char notiz[0xFF] = "";
+        ImGui::Text("%s %u:%u", aktueller_tab.get_buch()->get_name().c_str(), aktueller_tab.auswahl_kapitel, aktueller_tab.auswahl_vers);
+        ImGui::SameLine();
+        ImGui::InputTextWithHint("##input_notiz", "Notiz", notiz, IM_ARRAYSIZE(notiz));
+        ImGui::SameLine();
+        UI::push_icons();
+        if (ImGui::Button("\uF067")) {
+            Lesezeichen l(notiz, aktueller_tab.get_buch()->get_key(), aktueller_tab.auswahl_kapitel, aktueller_tab.auswahl_vers);
+            Lesezeichen::add(l);
+        }
+        ImGui::PopFont();
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Lesezeichen hinzufügen");
+        ImGui::NewLine();
+
+        // Alle Lesezeichen auflisten
+        for (unsigned i = 0; i < Lesezeichen::alle().size(); ++i) {
+            const Lesezeichen& l = Lesezeichen::alle()[i];
+            if (Buch::get_buecher().count(l.buch) == 0) continue;
+            const Buch& l_buch = Buch::get_buecher().at(l.buch);
+
+            // Löschen
+            UI::push_icons();
+            if (std::string id("\uF014##l_del_" + std::to_string(i)); ImGui::Button(id.c_str())) {
+                Lesezeichen::remove(i);
+                ImGui::PopFont();
+                break;
+            }
+            ImGui::PopFont();
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Lesezeichen Entfernen");
+            UI::push_icons();
+
+            // Auswählen
+            ImGui::SameLine();
+            if (std::string id("\uF061##l_goto_" + std::to_string(i)); ImGui::Button(id.c_str())) {
+                aktueller_tab.buch = &l_buch;
+                aktueller_tab.auswahl_kapitel = l.kapitel;
+                aktueller_tab.auswahl_vers = l.vers;
+                ImGui::PopFont();
+                break;
+            }
+            ImGui::PopFont();
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Anzeigen");
+
+            ImGui::SameLine();
+            ImGui::Text("%s %u:%u %s", l_buch.get_name().c_str(), l.kapitel, l.vers, l.notiz.c_str());
+        }
+    }
+    ImGui::End();
+    ImGui::PopFont();
 }
