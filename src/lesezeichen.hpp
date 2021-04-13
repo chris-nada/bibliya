@@ -21,10 +21,13 @@ public:
     /// Optionale Notiz des Nutzers.
     std::string notiz;
 
+    /// Lesezeichen: Key des Buches.
     std::string buch;
 
+    /// Lesezeichen: Kapitel.
     unsigned kapitel;
 
+    /// Lesezeichen: Vers.
     unsigned vers;
 
     bool operator<(const Lesezeichen& rhs) const;
@@ -36,8 +39,10 @@ public:
 
 private:
 
+    /// Speicher für alle Lesezeichen.
     static std::vector<Lesezeichen> lesezeichen;
 
+    /// Speichert alle aktuellen Lesezeichen.
     static void save();
 
 };

@@ -163,9 +163,10 @@ void Mainmenu::show_texte() {
     ImGui::BeginTabBar("##text_tabs");
     for (unsigned tab_index = 0; tab_index < tabs.size(); ++tab_index) {
 
-        const std::string tab_id("Tab " + std::to_string(tab_index+1));
+        const std::string tab_id(tabs[tab_index].get_name() + "###tabitem_" + std::to_string(tab_index+1));
         const bool begin_tab = ImGui::BeginTabItem(tab_id.c_str());
-        const bool close_tab = ImGui::IsItemClicked(ImGuiMouseButton_Middle) && tab_index > 0;
+        const bool close_tab = tab_index > 0 && (ImGui::IsItemClicked(ImGuiMouseButton_Right) ||
+                                                 ImGui::IsItemClicked(ImGuiMouseButton_Middle));
 
         // Tab +
         if (tab_index == tabs.size()-1) if (ImGui::SameLine(); ImGui::Button("+##neues_tab")) tabs.emplace_back(get_tab());
