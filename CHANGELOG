@@ -11,6 +11,7 @@ v
 + Fix: Vollbild -> Fenster (um Systemleiste nicht zu verstecken)
 + Fix: Suchen-Scroller sprang bei Klicken 'Anzeigen'
 + Fix: Quelltext kommentiert
++ Fix: Aktuelles Buch korrekt speichern
 
 v2021_01_13
 + Neu: Einstellungen

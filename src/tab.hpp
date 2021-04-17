@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include "buch.hpp"
 
 /// Enthält Textstelle, die ein Tab anzeigen soll
@@ -10,11 +11,20 @@ public:
     /// Default Ctor.
     Tab() = default;
 
-    /// (Anzuzeigendes Buch (initialisiert).
-    const mutable Buch* buch = nullptr;
+    /// Setter: Buch
+    void set_buch(const Buch* buch);
 
-    /// Anzuzeigendes Buch.
-    unsigned buch_pos = 1;
+    /// Getter: Buch.
+    const Buch* get_buch() const;
+
+    /// Liefert einen Namen für die aktuelle Textstelle: Mat 1:2
+    std::string get_name() const;
+
+    /// Serialisierungsmethode für Cereal.
+    template<class Archiv>
+    void serialize(Archiv& ar) {
+        ar(buch_pos, auswahl_kapitel, auswahl_vers, auswahl_modus);
+    }
 
     /// Anzuzeigendes Kapitel.
     unsigned auswahl_kapitel = 1;
@@ -25,23 +35,12 @@ public:
     /// 0 = Einzeln, 1 = Fünf Verse, 2 = Kapitel.
     int auswahl_modus = 2;
 
-    /// Getter: Buch.
-    const Buch* get_buch() const {
-        if (buch == nullptr) buch = &Buch::get_buch(1);
-        return buch;
-    }
+private:
 
-    /// Liefert einen Namen für die aktuelle Textstelle: Mat 1:2
-    std::string get_name() const {
-        std::string name(get_buch()->get_key() + " " + std::to_string(auswahl_kapitel));
-        if (auswahl_modus != 2 || auswahl_vers > 1) name.append(':' + std::to_string(auswahl_vers));
-        return name;
-    }
+    /// (Anzuzeigendes Buch (initialisiert).
+    const mutable Buch* buch = nullptr;
 
-    /// Serialisierungsmethode für Cereal.
-    template<class Archiv>
-    void serialize(Archiv& ar) {
-        ar(buch_pos, auswahl_kapitel, auswahl_vers, auswahl_modus);
-    }
+    /// Anzuzeigendes Buch.
+    unsigned buch_pos = 1;
 
 };

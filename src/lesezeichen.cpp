@@ -99,7 +99,7 @@ void Lesezeichen::show(const char* id_lesezeichen, bool* open_lesezeichen, Tab& 
             // Auswählen
             ImGui::SameLine();
             if (std::string id("\uF061##l_goto_" + std::to_string(i)); ImGui::Button(id.c_str())) {
-                aktueller_tab.buch = &l_buch;
+                aktueller_tab.set_buch(&l_buch);
                 aktueller_tab.auswahl_kapitel = l.kapitel;
                 aktueller_tab.auswahl_vers = l.vers;
                 ImGui::PopFont();

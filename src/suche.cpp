@@ -55,7 +55,7 @@ void Suche::show(const char* id_suche, bool* open_suche, Tab& aktueller_tab) {
                 UI::push_icons();
                 if (std::string id("\uF061##suche_goto_" + std::to_string(i)); ImGui::Button(id.c_str())) {
                     scroll_alt = std::make_pair(true, ImGui::GetScrollY()); // Scrollpos merken, Workaround
-                    aktueller_tab.buch = &l_buch;
+                    aktueller_tab.set_buch(&l_buch);
                     aktueller_tab.auswahl_kapitel = l.kapitel;
                     aktueller_tab.auswahl_vers = l.vers;
                     ImGui::PopFont();

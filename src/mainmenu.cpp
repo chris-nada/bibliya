@@ -375,12 +375,12 @@ void Mainmenu::ui_verswahl() {
             else if (buch_key == "Matt") einschub("- Neues Testament -");
 
             // Auswahl
-            if (get_tab().get_buch() == &temp_buch) {
+            if (get_tab().get_buch()->get_key() == temp_buch.get_key()) {
                 ImGui::PushStyleColor(ImGuiCol_FrameBg, {0xFF, 0x00, 0xFF, 0xFF});
-                if (ImGui::Selectable(temp_buch.get_name().c_str())) get_tab().buch = &temp_buch;
+                if (ImGui::Selectable(temp_buch.get_name().c_str())) get_tab().set_buch(&temp_buch);
                 ImGui::PopStyleColor();
             }
-            else if (ImGui::Selectable(temp_buch.get_name().c_str())) get_tab().buch = &temp_buch;
+            else if (ImGui::Selectable(temp_buch.get_name().c_str())) get_tab().set_buch(&temp_buch);
         }
         ImGui::EndCombo();
     }
@@ -391,7 +391,7 @@ void Mainmenu::ui_verswahl() {
     ImGui::SameLine(); if (ImGui::Button("-##buch_minus")) --buch_pos_neu;
     ImGui::SameLine(); if (ImGui::Button("+##buch_plus")) ++buch_pos_neu;
     if (buch_pos_neu != buch_pos_alt && buch_pos_neu >= 1 && buch_pos_neu <= buecher.size()) {
-        get_tab().buch = &Buch::get_buch(buch_pos_neu);
+        get_tab().set_buch(&Buch::get_buch(buch_pos_neu));
     }
 
     // Kapitelauswahl
