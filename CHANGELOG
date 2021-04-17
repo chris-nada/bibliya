@@ -1,15 +1,15 @@
 v
-+ TODO ComboBox auf Aktuelles Buch einrasten
 + TODO Idee: Übersetzungsmanager mit integrietem Download
 + TODO Lesezeichen Reihenfolge umsortierbar machen
 + TODO Lesezeichen Notiz grau oder so
 + TODO Übersetzung auch nach Herunterscrollen weiter zeigen
 + Neu: Tabs
 + Neu: Pfeiltasten zur Navigation Vers/Kapitel, Pos1 = Vers1
++ Etc: ComboBox rastet auf aktuelles Buch ein
 + Etc: Standardmodus ist jetzt Kapitel (statt 1 Vers / 5 Verse)
++ Etc: Vollbild -> Fenster (um Systemleiste nicht zu verstecken)
 + Fix: CPU Auslastung verringert
-+ Fix: Vollbild -> Fenster (um Systemleiste nicht zu verstecken)
-+ Fix: Suchen-Scroller sprang bei Klicken 'Anzeigen'
++ Fix: Suchen-Scroller sprang bei Klick auf 'Anzeigen'
 + Fix: Quelltext kommentiert
 + Fix: Aktuelles Buch korrekt speichern
 

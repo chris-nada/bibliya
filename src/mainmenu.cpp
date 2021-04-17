@@ -353,8 +353,9 @@ void Mainmenu::ui_verswahl() {
     const bool begin_buch_combo = ImGui::BeginCombo("##BuchCombo",
                                                     get_tab().get_buch()->get_name().c_str(),
                                                     ImGuiComboFlags_HeightLarge);
+    static int scroll = 0;
+    if (ImGui::IsItemClicked()) scroll = 3; // soeben geöffnet? -> scrollen zum aktuellen Buch
     if (begin_buch_combo) {
-        if (ImGui::IsItemClicked()) std::cout << "Combo open!" << std::endl;
         static const auto einschub = [](const char* text) {
             ImGui::Separator();
             ImGui::TextColored({UI::FARBE1}, "%s", text);
@@ -375,8 +376,9 @@ void Mainmenu::ui_verswahl() {
             else if (buch_key == "Matt") einschub("- Neues Testament -");
 
             // Auswahl
-            if (get_tab().get_buch()->get_key() == temp_buch.get_key()) {
-                ImGui::PushStyleColor(ImGuiCol_FrameBg, {0xFF, 0x00, 0xFF, 0xFF});
+            if (get_tab().get_buch()->get_pos() == temp_buch.get_pos()) {
+                if (scroll > 0) { ImGui::SetScrollY(ImGui::GetCursorPosY()); scroll--; }
+                ImGui::PushStyleColor(ImGuiCol_Text, {0x00, 0xFF, 0xFF, 0xFF});
                 if (ImGui::Selectable(temp_buch.get_name().c_str())) get_tab().set_buch(&temp_buch);
                 ImGui::PopStyleColor();
             }
