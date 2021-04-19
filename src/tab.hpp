@@ -4,7 +4,7 @@
 #include "buch.hpp"
 
 /// Enthält Textstelle, die ein Tab anzeigen soll
-class Tab {
+class Tab final {
 
 public:
 

@@ -6,12 +6,15 @@ const Buch* Tab::get_buch() const {
 }
 
 std::string Tab::get_name() const {
-    std::string name(get_buch()->get_key() + " " + std::to_string(auswahl_kapitel));
-    if (auswahl_modus != 2 || auswahl_vers > 1) name.append(':' + std::to_string(auswahl_vers));
+    std::string name(get_buch()->get_name());
+    if (auswahl_modus != 2 || auswahl_vers > 1) {
+        name.reserve(name.size() + 6);
+        name.append(' ' + std::to_string(auswahl_kapitel) + ':' + std::to_string(auswahl_vers));
+    }
     return name;
 }
 
 void Tab::set_buch(const Buch* buch) {
-    Tab::buch = buch;
+    this->buch = buch;
     if (buch) buch_pos = buch->get_pos();
 }
