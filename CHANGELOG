@@ -7,6 +7,7 @@ v
 v2021_05_27
 + Neu: Tabs
 + Neu: Pfeiltasten zur Navigation Vers/Kapitel, Pos1 = Vers1
++ Neu: Standardmäßig 3 englische Übersetzungen hinzugefügt
 + Etc: ComboBox rastet auf aktuelles Buch ein
 + Etc: Standardmodus ist jetzt Kapitel (statt 1 Vers / 5 Verse)
 + Etc: Vollbild -> Fenster (um Systemleiste nicht zu verstecken)

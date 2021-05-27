@@ -12,7 +12,20 @@
 + Wünsche zu neuen Funktionen, Fragen oder Fehler sehr gern an mich oder hier ein _Issue_ eröffnen.
 
 # Download
-**Portable. Einfach irgendwo entpacken und mit `bibliya.exe` starten.**
+**Portable Zip-Datei. Einfach irgendwo entpacken und mit `bibliya.exe` starten.**
+
+### Version 2021_05_27
++ **Windows** [Download](https://drive.google.com/file/d/1kOCIo6S2bGZabPln4Pl_9pqKG59c7-cF) (44MB, Google Drive)
+  + Neu: Tabs
+  + Neu: Pfeiltasten zur Navigation Vers/Kapitel, Pos1 = Vers1
+  + Neu: Standardmäßig 3 englische Übersetzungen hinzugefügt
+  + Etc: ComboBox rastet auf aktuelles Buch ein
+  + Etc: Standardmodus ist jetzt Kapitel (statt 1 Vers / 5 Verse)
+  + Etc: Fenstermodus ist jetzt standard (um Systemleiste nicht zu verstecken)
+  + Fix: CPU Auslastung verringert
+  + Fix: Suchen-Scroller sprang bei Klick auf 'Anzeigen'
+  + Fix: Aktuelles Buch korrekt speichern
+
 ### Version 2021_01_13
 + **Windows** [Download](https://drive.google.com/file/d/1bYWOMPRbtVXzT85tj15iTiYK9iQTUN-f) (27MB, Google Drive)
   + Neu: Einstellungen für Farben und Schriftgröße
