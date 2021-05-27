@@ -14,7 +14,7 @@
 # Download
 **Portable Zip-Datei. Einfach irgendwo entpacken und mit `bibliya.exe` starten.**
 
-### Version 2021_05_27
+### Version 2021_05_27 (neueste)
 + **Windows** [Download](https://drive.google.com/file/d/1kOCIo6S2bGZabPln4Pl_9pqKG59c7-cF) (44MB, Google Drive)
   + Neu: Tabs
   + Neu: Pfeiltasten zur Navigation Vers/Kapitel, Pos1 = Vers1
