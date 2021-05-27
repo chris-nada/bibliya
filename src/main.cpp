@@ -35,8 +35,10 @@ int main() {
     #endif
 
     // Hauptanwendung
-    Mainmenu menu(window);
-    menu.show();
+    {
+        Mainmenu menu(window);
+        menu.show();
+    }
 
     ImPlot::DestroyContext();
     ImGui::SFML::Shutdown();
